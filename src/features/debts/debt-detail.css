@@ -1,0 +1,124 @@
+.debt-detail {
+  min-height: 100svh;
+  padding: max(env(safe-area-inset-top), 12px) 16px max(env(safe-area-inset-bottom), 16px);
+  background: #f8f9fb;
+}
+
+.debt-detail__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.debt-detail__back {
+  all: unset;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  color: #1a5336;
+  font-weight: 700;
+}
+
+.debt-detail__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.debt-detail__tabs {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+}
+
+.debt-detail__tab {
+  all: unset;
+  flex: 1;
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  background: #ffffff;
+  color: #404942;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.debt-detail__tab.is-active {
+  background: linear-gradient(90deg, #1a5336 0%, #296140 100%);
+  color: white;
+}
+
+.debt-detail__body {
+  margin-top: 12px;
+}
+
+.installment-card {
+  padding: 14px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  background: #ffffff;
+  border: 1px solid #ebebeb;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.installment-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.installment-card__head h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.installment-card__amount {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a5336;
+}
+
+.installment-card__row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  color: #404942;
+}
+
+.installment-card__cta-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.btn-pay {
+  all: unset;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff8a00 0%, #ff5e3a 100%);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(255,94,58,0.18);
+}
+
+.mora {
+  color: #d97706;
+  font-weight: 700;
+}
+
+@media (max-width: 420px) {
+  .debt-detail__title { font-size: 1rem }
+  .installment-card { padding: 12px }
+}

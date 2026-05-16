@@ -1,7 +1,7 @@
 import './dashboard.css'
 
 type DashboardScreenProps = {
-  onLogout: () => void
+  onLogout?: () => void
 }
 
 function HomeIcon() {
@@ -50,9 +50,11 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
             <h1>Hola Sarah!</h1>
           </div>
 
-          <button className="dashboard__logout" type="button" onClick={onLogout}>
-            Salir
-          </button>
+          {onLogout && (
+            <button className="dashboard__logout" type="button" onClick={onLogout}>
+              Salir
+            </button>
+          )}
         </header>
 
         <section className="dashboard__hero card-surface">
