@@ -9,11 +9,11 @@ export default defineConfig({
       registerType: 'autoUpdate',
 
       manifest: {
-        name: 'DebtCare',
-        short_name: 'DebtCare',
-        description: 'Plataforma inteligente para gestión de deudas',
-        theme_color: '#0f172a',
-        background_color: '#ffffff',
+        name: 'Escudo Financiero',
+        short_name: 'Escudo Financiero',
+        description: 'PWA institucional para acceso seguro del Banco Mercantil Santa Cruz',
+        theme_color: '#1a5336',
+        background_color: '#f8f9fb',
         display: 'standalone',
         start_url: '/',
 
