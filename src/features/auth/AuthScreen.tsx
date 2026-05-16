@@ -1,4 +1,10 @@
+import type { FormEvent } from 'react'
+
 import './auth.css'
+
+type AuthScreenProps = {
+  onSubmit: () => void
+}
 
 function CardIdIcon() {
   return (
@@ -36,7 +42,12 @@ function FingerprintBadge() {
   )
 }
 
-export function AuthScreen() {
+export function AuthScreen({ onSubmit }: AuthScreenProps) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    onSubmit()
+  }
+
   return (
     <main className="auth-screen">
       <div className="auth-screen__ambient auth-screen__ambient--one" aria-hidden="true" />
@@ -79,7 +90,7 @@ export function AuthScreen() {
         </section>
 
         <section className="auth-card card-surface">
-          <form className="auth-form">
+          <form className="auth-form" onSubmit={handleSubmit}>
             <div className="auth-field">
               <label htmlFor="carnet">Carnet de identidad</label>
               <div className="auth-input-shell">
