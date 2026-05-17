@@ -1,8 +1,8 @@
 import './BottomNav.css'
 
 interface BottomNavProps {
-  activeTab: 'home' | 'debts' | 'renegotiate'
-  onTabChange: (tab: 'home' | 'debts' | 'renegotiate') => void
+  activeTab: 'home' | 'debts' | 'ampliaciones'
+  onTabChange: (tab: 'home' | 'debts' | 'ampliaciones') => void
 }
 
 function HomeIcon() {
@@ -47,14 +47,14 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
       </button>
 
       <button
-        className={`bottom-nav__item bottom-nav__item--highlight ${activeTab === 'renegotiate' ? 'bottom-nav__item--active' : ''}`}
-        onClick={() => onTabChange('renegotiate')}
-        aria-current={activeTab === 'renegotiate' ? 'page' : undefined}
+        className={`bottom-nav__item bottom-nav__item--highlight ${activeTab === 'ampliaciones' ? 'bottom-nav__item--active' : ''}`}
+        onClick={() => onTabChange('ampliaciones')}
+        aria-current={activeTab === 'ampliaciones' ? 'page' : undefined}
       >
         <span className="bottom-nav__icon">
           <DebtIcon />
         </span>
-        <span className="bottom-nav__label">Renegociar</span>
+        <span className="bottom-nav__label">Ampliaciones</span>
       </button>
     </nav>
   )

@@ -1,13 +1,42 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
+import { fetchDashboardInitial, requestCreditExtension, type DashboardCredit } from '../../lib/backendApi'
 import './renegotiate.css'
 
 type RenegotiateScreenProps = {
   onSubmit?: () => void
 }
 
-const debtOptions = ['Deuda 1', 'Deuda 2', 'Deuda 3']
+function formatCurrency(value: number) {
+  return value.toLocaleString('es-BO', {
+    style: 'currency',
+    currency: 'BOB',
+    minimumFractionDigits: 0,
+  })
+}
 
-const requestOptions = ['Reprogramación', 'Período de prórroga', 'Período de gracia']
+function getCreditLabel(credit: DashboardCredit) {
+  const normalized = credit.tipo_credito.toLowerCase()
+
+  if (normalized.includes('vivi')) {
+    return 'Crédito de vivienda'
+  }
+
+  if (normalized.includes('micro')) {
+    return 'Crédito microempresa'
+  }
+
+  return 'Crédito de consumo'
+}
+
+function estimateExtensionQuota(credit: DashboardCredit, newPlazo: number) {
+  if (newPlazo <= 0) {
+    return 0
+  }
+
+  const ratio = credit.plazo_meses / newPlazo
+  return Math.round(credit.cuota_mensual * ratio)
+}
 
 function WhatsAppIcon() {
   return (
@@ -18,47 +47,183 @@ function WhatsAppIcon() {
 }
 
 export function RenegotiateScreen({ onSubmit }: RenegotiateScreenProps) {
+  const location = useLocation()
+  const { id: routeCreditId } = useParams()
+  const [credits, setCredits] = useState<DashboardCredit[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [selectedCreditId, setSelectedCreditId] = useState('')
+  const [newPlazo, setNewPlazo] = useState(36)
+  const [motivo, setMotivo] = useState('')
+  const [requestType, setRequestType] = useState('AMPLIACION_DE_PLAZO')
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let alive = true
+
+    async function loadCredits() {
+      setIsLoading(true)
+      setError(null)
+
+      try {
+        const response = await fetchDashboardInitial()
+        if (!alive) {
+          return
+        }
+
+        const activeCredits = response.creditos.filter((credit) => credit.estado.toUpperCase() !== 'CANCELADO')
+        setCredits(activeCredits)
+  const requestedCreditId = (location.state as { creditId?: string } | null)?.creditId ?? routeCreditId ?? ''
+  setSelectedCreditId((current) => current || requestedCreditId || activeCredits[0]?.id || '')
+      } catch (loadError) {
+        if (!alive) {
+          return
+        }
+
+        setError(loadError instanceof Error ? loadError.message : 'No se pudo cargar la información de créditos.')
+      } finally {
+        if (alive) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadCredits()
+
+    return () => {
+      alive = false
+    }
+  }, [location.state, routeCreditId])
+
+  const selectedCredit = useMemo(() => credits.find((credit) => credit.id === selectedCreditId) ?? null, [credits, selectedCreditId])
+  const estimatedQuota = selectedCredit ? estimateExtensionQuota(selectedCredit, newPlazo) : 0
+  const extraMonths = selectedCredit ? Math.max(newPlazo - selectedCredit.plazo_meses, 0) : 0
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (!selectedCredit) {
+      setSubmitError('Selecciona un crédito para continuar.')
+      return
+    }
+
+    setIsSubmitting(true)
+    setSubmitError(null)
+
+    try {
+      const typeLabel = requestType === 'AMPLIACION_DE_PLAZO'
+        ? 'Ampliación de plazo'
+        : requestType === 'PERIODO_PRORROGA'
+          ? 'Período de prórroga'
+          : 'Período de gracia'
+
+      const composedMotivo = `${typeLabel} - ${motivo.trim()}`
+
+      await requestCreditExtension(selectedCredit.id, {
+        new_plazo_meses: newPlazo,
+        motivo: composedMotivo,
+      })
+
+      setShowConfirmation(true)
+      onSubmit?.()
+    } catch (requestError) {
+      setSubmitError(requestError instanceof Error ? requestError.message : 'No se pudo registrar la solicitud.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <main className="renegotiate-screen">
+        <section className="renegotiate-shell card-surface">
+          <header className="renegotiate-header">
+            <p className="renegotiate-header__eyebrow">Escudo Financiero</p>
+            <h1>Ampliación de plazo</h1>
+            <p className="renegotiate-header__subtitle">Cargando tus créditos...</p>
+          </header>
+        </section>
+      </main>
+    )
+  }
+
+  if (error) {
+    return (
+      <main className="renegotiate-screen">
+        <section className="renegotiate-shell card-surface">
+          <header className="renegotiate-header">
+            <p className="renegotiate-header__eyebrow">Escudo Financiero</p>
+            <h1>Ampliación de plazo</h1>
+            <p className="renegotiate-header__subtitle">No pudimos cargar la información.</p>
+          </header>
+
+          <div className="renegotiate-error">
+            {error}
+          </div>
+        </section>
+      </main>
+    )
+  }
 
   return (
     <main className="renegotiate-screen">
       <section className="renegotiate-shell card-surface">
         <header className="renegotiate-header">
           <p className="renegotiate-header__eyebrow">Escudo Financiero</p>
-          <h1>Renegociar</h1>
+          <h1>Ampliación de plazo</h1>
           <p className="renegotiate-header__subtitle">
-            Completa la solicitud para revisar una alternativa de pago.
+            Solicita más meses para tu crédito y revisa el nuevo valor estimado de la cuota.
           </p>
         </header>
 
         <form
           className="renegotiate-form"
-          onSubmit={(event) => {
-            event.preventDefault()
-            setShowConfirmation(true)
-            onSubmit?.()
-          }}
+          onSubmit={handleSubmit}
         >
           <label className="renegotiate-field">
-            <span className="renegotiate-field__label">Deuda</span>
-            <select className="renegotiate-field__control" defaultValue={debtOptions[0]}>
-              {debtOptions.map((debt) => (
-                <option key={debt} value={debt}>
-                  {debt}
+            <span className="renegotiate-field__label">Crédito</span>
+            <select
+              className="renegotiate-field__control"
+              value={selectedCreditId}
+              onChange={(event) => setSelectedCreditId(event.target.value)}
+            >
+              {credits.map((credit) => (
+                <option key={credit.id} value={credit.id}>
+                  {getCreditLabel(credit)} · {formatCurrency(credit.saldo_pendiente)}
                 </option>
               ))}
             </select>
           </label>
 
           <label className="renegotiate-field">
+            <span className="renegotiate-field__label">Nuevo plazo (meses)</span>
+            <input
+              className="renegotiate-field__control"
+              type="number"
+              min={1}
+              max={360}
+              value={newPlazo}
+              onChange={(event) => setNewPlazo(Number(event.target.value))}
+              aria-label="Nuevo plazo en meses"
+            />
+            <p className="renegotiate-field__hint">Introduce el número total de meses deseado; el sistema calculará la cuota estimada automáticamente.</p>
+          </label>
+
+          <label className="renegotiate-field">
             <span className="renegotiate-field__label">Solicitud de</span>
-            <select className="renegotiate-field__control" defaultValue={requestOptions[0]}>
-              {requestOptions.map((request) => (
-                <option key={request} value={request}>
-                  {request}
-                </option>
-              ))}
+            <select
+              className="renegotiate-field__control"
+              value={requestType}
+              onChange={(e) => setRequestType(e.target.value)}
+              aria-label="Tipo de solicitud"
+            >
+              <option value="AMPLIACION_DE_PLAZO">Ampliación de plazo</option>
+              <option value="PERIODO_PRORROGA">Período de prórroga</option>
+              <option value="PERIODO_GRACIA">Período de gracia</option>
             </select>
+            <p className="renegotiate-field__hint">Selecciona el tipo de solicitud; se incluirá junto al motivo.</p>
           </label>
 
           <label className="renegotiate-field">
@@ -67,11 +232,32 @@ export function RenegotiateScreen({ onSubmit }: RenegotiateScreenProps) {
               className="renegotiate-field__control renegotiate-field__control--textarea"
               placeholder="Describe brevemente el motivo de la solicitud"
               rows={4}
+              value={motivo}
+              onChange={(event) => setMotivo(event.target.value)}
             />
           </label>
 
-          <button className="renegotiate-submit" type="submit">
-            Enviar
+          {selectedCredit && (
+            <section className="renegotiate-preview card-surface">
+              <div className="renegotiate-preview__item">
+                <span className="renegotiate-preview__label">Cuota actual</span>
+                <strong>{formatCurrency(selectedCredit.cuota_mensual)}</strong>
+              </div>
+              <div className="renegotiate-preview__item">
+                <span className="renegotiate-preview__label">Cuota estimada</span>
+                <strong>{formatCurrency(estimatedQuota)}</strong>
+              </div>
+              <div className="renegotiate-preview__item">
+                <span className="renegotiate-preview__label">Meses adicionales</span>
+                <strong>{extraMonths}</strong>
+              </div>
+            </section>
+          )}
+
+          {submitError && <p className="renegotiate-error">{submitError}</p>}
+
+          <button className="renegotiate-submit" type="submit" disabled={isSubmitting || !selectedCreditId}>
+            {isSubmitting ? 'Enviando...' : 'Solicitar ampliación'}
           </button>
         </form>
       </section>
@@ -91,10 +277,9 @@ export function RenegotiateScreen({ onSubmit }: RenegotiateScreenProps) {
 
             <div className="renegotiate-modal__content">
               <p className="renegotiate-modal__eyebrow">Solicitud enviada</p>
-              <h2 id="renegotiate-modal-title">Nos pondremos en contacto contigo por WhatsApp</h2>
+              <h2 id="renegotiate-modal-title">Tu ampliación de plazo quedó registrada</h2>
               <p id="renegotiate-modal-description">
-                Recibimos tu solicitud de renegociación. Un asesor la revisará y te escribirá al
-                número registrado para continuar con el proceso.
+                Un asesor revisará la solicitud y te contactará por WhatsApp para continuar con el proceso.
               </p>
             </div>
 

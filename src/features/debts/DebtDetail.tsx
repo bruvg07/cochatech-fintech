@@ -15,6 +15,7 @@ type DebtDetailProps = {
   detail: CreditDetailResponse
   onBack: () => void
   onPay?: (payment: Payment) => void
+  onRequestExtension?: () => void
 }
 
 function formatCurrency(value: number) {
@@ -62,13 +63,14 @@ function mapPayment(payment: CreditDetailPayment): Payment {
   }
 }
 
-export function DebtDetail({ detail, onBack, onPay }: DebtDetailProps) {
+export function DebtDetail({ detail, onBack, onPay, onRequestExtension }: DebtDetailProps) {
   const [tab, setTab] = useState<'upcoming' | 'paid'>('upcoming')
 
   const credit = detail.credito
   const upcomingPayments = useMemo(() => detail.proximas_cuotas.map(mapPayment), [detail.proximas_cuotas])
   const paidPayments = useMemo(() => detail.pagos_realizados.map(mapPayment), [detail.pagos_realizados])
   const latestAlert = detail.alertas[0]
+  const latestAgreement = detail.acuerdos[0]
 
   return (
     <main className="debt-detail">
@@ -109,6 +111,11 @@ export function DebtDetail({ detail, onBack, onPay }: DebtDetailProps) {
             ? `Se detectaron ${detail.resumen.pagos_con_retraso} pagos con retraso en este crédito.`
             : 'No hay pagos con retraso en este crédito.'}
         </p>
+        {onRequestExtension && (
+          <button className="btn-pay debt-detail__extension-cta" type="button" onClick={onRequestExtension}>
+            Solicitar ampliación de plazo
+          </button>
+        )}
       </section>
 
       {latestAlert && (
@@ -116,6 +123,17 @@ export function DebtDetail({ detail, onBack, onPay }: DebtDetailProps) {
           <p className="debt-detail__banner-eyebrow">Última alerta</p>
           <h3>{latestAlert.tipo ?? 'Alerta financiera'}</h3>
           <p>{latestAlert.mensaje}</p>
+        </section>
+      )}
+
+      {latestAgreement && (
+        <section className="debt-detail__alert card-surface">
+          <p className="debt-detail__banner-eyebrow">Solicitud de ampliación</p>
+          <h3>{latestAgreement.estado}</h3>
+          <p>
+            Plazo solicitado: {latestAgreement.nuevo_plazo_meses ?? 0} meses. Cuota estimada:{' '}
+            {formatCurrency(latestAgreement.nueva_cuota ?? 0)}.
+          </p>
         </section>
       )}
 

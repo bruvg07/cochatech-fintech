@@ -36,6 +36,40 @@
   color: #191c1e;
 }
 
+.renegotiate-preview {
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  border: 1px solid rgba(224, 227, 229, 0.9);
+}
+
+.renegotiate-preview__item {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(242, 244, 246, 0.72);
+}
+
+.renegotiate-preview__label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.renegotiate-error {
+  margin: 0;
+  color: #b42318;
+  font-weight: 600;
+}
+
+.renegotiate-modal__icon--success {
+  background: linear-gradient(135deg, rgba(26, 83, 54, 0.12), rgba(41, 97, 64, 0.2));
+}
+
 .renegotiate-header__subtitle {
   margin: 0;
   color: #404942;

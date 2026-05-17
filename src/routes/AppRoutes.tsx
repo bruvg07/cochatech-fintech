@@ -18,7 +18,7 @@ function DebtsRoute() {
   return (
     <>
       <DebtsScreen onDebtSelect={handleSelect} />
-      <BottomNav activeTab="debts" onTabChange={(t) => navigate(t === 'home' ? '/dashboard' : t === 'debts' ? '/debts' : '/renegotiate')} />
+      <BottomNav activeTab="debts" onTabChange={(t) => navigate(t === 'home' ? '/dashboard' : t === 'debts' ? '/debts' : '/ampliaciones')} />
     </>
   )
 }
@@ -28,7 +28,7 @@ function DashboardRoute() {
   return (
     <>
       <DashboardScreen onLogout={() => { clearSession(); navigate('/auth') }} />
-      <BottomNav activeTab="home" onTabChange={(t) => navigate(t === 'home' ? '/dashboard' : t === 'debts' ? '/debts' : '/renegotiate')} />
+      <BottomNav activeTab="home" onTabChange={(t) => navigate(t === 'home' ? '/dashboard' : t === 'debts' ? '/debts' : '/ampliaciones')} />
     </>
   )
 }
@@ -118,7 +118,9 @@ function DebtDetailRoute() {
 
   const handlePay = (p: Payment) => navigate(`/payment/${p.id}`, { state: { payment: p } })
 
-  return <DebtDetail detail={detail} onBack={() => navigate('/debts')} onPay={handlePay} />
+  const handleRequestExtension = () => navigate('/ampliaciones', { state: { creditId: detail.credito.id } })
+
+  return <DebtDetail detail={detail} onBack={() => navigate('/debts')} onPay={handlePay} onRequestExtension={handleRequestExtension} />
 }
 
 function PaymentRoute() {
@@ -148,9 +150,9 @@ export function AppRoutes() {
       <Route path="/debts" element={<DebtsRoute />} />
       <Route path="/debt/:id" element={<DebtDetailRoute />} />
       <Route path="/payment/:id" element={<PaymentRoute />} />
-      <Route path="/renegotiate" element={<>
-        <RenegotiateScreen />
-      </>} />
+      <Route path="/ampliaciones" element={<RenegotiateScreen />} />
+      <Route path="/ampliaciones/:id" element={<RenegotiateScreen />} />
+      <Route path="/renegotiate" element={<Navigate to="/ampliaciones" replace />} />
       <Route path="/admin/dashboard" element={<CreditAnalysisAdmin />} />
       <Route path="/admin/requests-users" element={<AdminRequestsUsersScreen />} />
       <Route path="/admin/requests-users/:ci" element={<AdminUserDetailScreen />} />

@@ -91,6 +91,26 @@ export type RegisterPaymentResponse = {
   }
 }
 
+export type ExtensionRequest = {
+  new_plazo_meses: number
+  motivo: string
+}
+
+export type ExtensionResponse = {
+  message: string
+  solicitud: {
+    id: string
+    credito_id: string
+    cliente_id: string
+    tipo: string
+    monto_deuda: number
+    nuevo_plazo_meses: number
+    nueva_cuota: number
+    estado: string
+    fecha_inicio?: string | null
+  }
+}
+
 export type CreditDetailResponse = {
   cliente: {
     id: string
@@ -112,7 +132,9 @@ export type CreditDetailResponse = {
     pagos_registrados: number
     pagos_con_retraso: number
     alertas_activas: number
+    acuerdos_totales: number
     acuerdos_activos: number
+    acuerdos_pendientes: number
     casos_abiertos: number
   }
   pagos_realizados: CreditDetailPayment[]
@@ -265,4 +287,24 @@ export async function registerCreditPayment(creditId: string, request: RegisterP
   })
 
   return parseJsonResponse<RegisterPaymentResponse>(response)
+}
+
+export async function requestCreditExtension(creditId: string, request: ExtensionRequest): Promise<ExtensionResponse> {
+  const session = getStoredSession()
+
+  if (!session) {
+    throw new Error('No hay una sesión activa.')
+  }
+
+  const response = await fetch(`${API_BASE_URL}/creditos/${creditId}/ampliacion-plazo`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${session.token}`,
+    },
+    body: JSON.stringify(request),
+  })
+
+  return parseJsonResponse<ExtensionResponse>(response)
 }
