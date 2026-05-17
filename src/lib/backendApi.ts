@@ -177,6 +177,72 @@ export type DashboardResponse = {
   mensaje: string
 }
 
+export type AdminGradeRow = {
+  grade: string
+  count: number
+}
+
+export type AdminDashboardResponse = {
+  filters: {
+    year: number
+    month: number
+    city: string
+  }
+  grades: AdminGradeRow[]
+  summary: {
+    total_clientes: number
+    total_creditos: number
+    mora_total: number
+    retrasos_totales: number
+    promedio_dias_retraso: number
+    scores_registrados: number
+  }
+  insight: string
+}
+
+export type AdminUserCard = {
+  name: string
+  ci: string
+  score: 'A' | 'B' | 'C' | 'D' | 'E' | 'F'
+}
+
+export type AdminRequestItem = {
+  id: string
+  title: string
+  ci: string
+  priority: 'Alta' | 'Media'
+  type: string
+  origin: string
+  reason: string
+  status: string
+}
+
+export type AdminRequestsUsersResponse = {
+  users: AdminUserCard[]
+  requests: AdminRequestItem[]
+}
+
+export type AdminUserDetailResponse = {
+  user: AdminUserCard
+  credit: {
+    name: string
+    id?: string | null
+  }
+  rows: Array<{
+    cuota: string
+    calific: string
+    justificacion: string
+  }>
+  request: {
+    id: string
+    title: string
+    type: string
+    origin: string
+    reason: string
+    status: string
+  } | null
+}
+
 export type StoredSession = {
   token: string
   cliente: LoginResponse['cliente']
@@ -307,4 +373,71 @@ export async function requestCreditExtension(creditId: string, request: Extensio
   })
 
   return parseJsonResponse<ExtensionResponse>(response)
+}
+
+export async function fetchAdminDashboard(filters?: { year?: number; month?: number; city?: string }): Promise<AdminDashboardResponse> {
+  const session = getStoredSession()
+
+  if (!session) {
+    throw new Error('No hay una sesión activa.')
+  }
+
+  const params = new URLSearchParams()
+
+  if (filters?.year) {
+    params.set('year', String(filters.year))
+  }
+
+  if (filters?.month) {
+    params.set('month', String(filters.month))
+  }
+
+  if (filters?.city) {
+    params.set('city', filters.city)
+  }
+
+  const query = params.toString()
+  const response = await fetch(`${API_BASE_URL}/admin/dashboard${query ? `?${query}` : ''}`, {
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${session.token}`,
+    },
+  })
+
+  return parseJsonResponse<AdminDashboardResponse>(response)
+}
+
+export async function fetchAdminRequestsUsers(ci?: string): Promise<AdminRequestsUsersResponse> {
+  const session = getStoredSession()
+
+  if (!session) {
+    throw new Error('No hay una sesión activa.')
+  }
+
+  const query = ci ? `?ci=${encodeURIComponent(ci)}` : ''
+  const response = await fetch(`${API_BASE_URL}/admin/requests-users${query}`, {
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${session.token}`,
+    },
+  })
+
+  return parseJsonResponse<AdminRequestsUsersResponse>(response)
+}
+
+export async function fetchAdminUserDetail(ci: string): Promise<AdminUserDetailResponse> {
+  const session = getStoredSession()
+
+  if (!session) {
+    throw new Error('No hay una sesión activa.')
+  }
+
+  const response = await fetch(`${API_BASE_URL}/admin/requests-users/${ci}`, {
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${session.token}`,
+    },
+  })
+
+  return parseJsonResponse<AdminUserDetailResponse>(response)
 }

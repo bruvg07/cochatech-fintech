@@ -1,7 +1,8 @@
-import { useMemo } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { ADMIN_REQUESTS, getAdminRequestByCi, getAdminUserByCi } from './adminRequestsUsersData'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import './admin-user-detail.css'
+import { AdminLayout } from './AdminLayout'
+import { fetchAdminUserDetail, type AdminUserDetailResponse } from '../../lib/backendApi'
 
 function ChatIcon() {
   return (
@@ -11,28 +12,70 @@ function ChatIcon() {
   )
 }
 
-type RouteState = {
-  user?: {
-    name: string
-    ci: string
-    score: 'A' | 'B' | 'C' | 'D' | 'E'
-  }
-}
-
 export function AdminUserDetailScreen() {
   const { ci } = useParams()
-  const location = useLocation()
   const navigate = useNavigate()
 
-  const routeUser = (location.state as RouteState | null | undefined)?.user
-  const user = useMemo(() => routeUser ?? getAdminUserByCi(ci), [routeUser, ci])
-  const request = useMemo(() => getAdminRequestByCi(ci) ?? ADMIN_REQUESTS[0], [ci])
+  const [detail, setDetail] = useState<AdminUserDetailResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  if (!user) {
+  useEffect(() => {
+    let alive = true
+
+    async function loadUserDetail() {
+      if (!ci) {
+        setError('Usuario no encontrado.')
+        setIsLoading(false)
+        return
+      }
+
+      setIsLoading(true)
+      setError(null)
+
+      try {
+        const response = await fetchAdminUserDetail(ci)
+        if (!alive) {
+          return
+        }
+
+        setDetail(response)
+      } catch (loadError) {
+        if (!alive) {
+          return
+        }
+
+        setError(loadError instanceof Error ? loadError.message : 'No se pudo cargar el detalle del usuario.')
+      } finally {
+        if (alive) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadUserDetail()
+
+    return () => {
+      alive = false
+    }
+  }, [ci])
+
+  if (isLoading) {
     return (
       <main className="admin-detail">
         <section className="admin-detail__shell card-surface">
-          <h1>Usuario no encontrado</h1>
+          <h1>Cargando usuario...</h1>
+        </section>
+      </main>
+    )
+  }
+
+  if (error || !detail) {
+    return (
+      <main className="admin-detail">
+        <section className="admin-detail__shell card-surface">
+          <h1>No se pudo cargar el usuario</h1>
+          <p>{error ?? 'Intenta nuevamente.'}</p>
           <button type="button" className="admin-detail__back" onClick={() => navigate(-1)}>
             Volver
           </button>
@@ -41,35 +84,16 @@ export function AdminUserDetailScreen() {
     )
   }
 
-  const tableRows = [
-    { cuota: 'Cuota 1', calific: 'A', justificacion: '-' },
-    { cuota: 'Cuota 2', calific: 'C', justificacion: 'Pago parcial' },
-    { cuota: 'Cuota 3', calific: 'A', justificacion: '-' },
-    { cuota: 'Cuota 4', calific: 'B', justificacion: 'Retraso leve' },
-  ]
+  const user = detail.user
+  const request = detail.request
+  const tableRows = detail.rows
 
   return (
-    <main className="admin-detail">
-      <section className="admin-detail__shell">
-        <header className="admin-detail__top card-surface">
-          <div className="admin-detail__brand-frame">
-            <div className="admin-detail__brand">
-              <div className="admin-detail__logo" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 3 3.5 8v8.5L12 21l8.5-4.5V8L12 3Zm0 2.1 6.5 3.8v6.2L12 19.1 5.5 15.1V8.9L12 5.1Z" fill="#1a5336" />
-                  <path d="M7.5 12h9v1.5h-9z" fill="#fff" />
-                </svg>
-              </div>
-              <div>
-                <p className="admin-detail__eyebrow">BMSC</p>
-                <h1>Detalle de Usuario y Solicitudes</h1>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <div className="admin-detail__grid">
-          <section className="admin-detail__left card-surface">
+    <AdminLayout>
+      <main className="admin-detail">
+        <section className="admin-detail__shell">
+          <div className="admin-detail__grid">
+            <section className="admin-detail__left card-surface">
             <div className="admin-detail__identity">
               <p className="admin-detail__label">Información Personal</p>
               <h2>{user.name}</h2>
@@ -77,7 +101,7 @@ export function AdminUserDetailScreen() {
             </div>
 
             <div className="admin-detail__table-block">
-              <h3>CREDITO 1</h3>
+              <h3>{detail.credit.name.toUpperCase()}</h3>
               <table className="admin-detail__table">
                 <thead>
                   <tr>
@@ -104,14 +128,14 @@ export function AdminUserDetailScreen() {
 
             <article className="admin-detail__request-card">
               <div className="admin-detail__request-head">
-                <span className="admin-detail__request-pill">Activa</span>
-                <span className="admin-detail__request-title">{request.title}</span>
+                <span className="admin-detail__request-pill">{request?.status ?? 'Sin estado'}</span>
+                <span className="admin-detail__request-title">{request?.title ?? 'Sin solicitud activa'}</span>
               </div>
 
               <div className="admin-detail__request-meta">
-                <p><strong>Tipo de trámite:</strong> {request.type}</p>
-                <p><strong>Origen:</strong> {request.origin}</p>
-                <p><strong>Motivo del cliente:</strong> {request.reason}</p>
+                <p><strong>Tipo de trámite:</strong> {request?.type ?? 'Sin registro'}</p>
+                <p><strong>Origen:</strong> {request?.origin ?? 'Sin registro'}</p>
+                <p><strong>Motivo del cliente:</strong> {request?.reason ?? 'Sin registro'}</p>
               </div>
 
               <button type="button" className="admin-detail__contact">
@@ -123,6 +147,7 @@ export function AdminUserDetailScreen() {
         </div>
       </section>
     </main>
+    </AdminLayout>
   )
 }
 

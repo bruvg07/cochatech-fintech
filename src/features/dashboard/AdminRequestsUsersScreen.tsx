@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ADMIN_USERS, ADMIN_REQUESTS } from './adminRequestsUsersData'
 import './admin-requests-users.css'
+import { AdminLayout } from './AdminLayout'
+import { fetchAdminRequestsUsers, type AdminRequestItem, type AdminUserCard } from '../../lib/backendApi'
 
 function SearchIcon() {
   return (
@@ -21,45 +22,64 @@ function AlertIcon() {
   )
 }
 
-function UserScoreBadge({ score }: { score: (typeof ADMIN_USERS)[number]['score'] }) {
+function UserScoreBadge({ score }: { score: AdminUserCard['score'] }) {
   return <span className={`admin-users__score admin-users__score--${score}`}>{score}</span>
 }
 
 export function AdminRequestsUsersScreen() {
   const [ciFilter, setCiFilter] = useState('')
+  const [users, setUsers] = useState<AdminUserCard[]>([])
+  const [requests, setRequests] = useState<AdminRequestItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
 
+  useEffect(() => {
+    let alive = true
+
+    async function loadAdminData() {
+      setIsLoading(true)
+      setError(null)
+
+      try {
+        const response = await fetchAdminRequestsUsers(ciFilter.trim() || undefined)
+        if (!alive) {
+          return
+        }
+
+        setUsers(response.users)
+        setRequests(response.requests)
+      } catch (loadError) {
+        if (!alive) {
+          return
+        }
+
+        setError(loadError instanceof Error ? loadError.message : 'No se pudo cargar el panel de solicitudes.')
+      } finally {
+        if (alive) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    const debounce = setTimeout(loadAdminData, 250)
+
+    return () => {
+      alive = false
+      clearTimeout(debounce)
+    }
+  }, [ciFilter])
+
   const filteredUsers = useMemo(
-    () => ADMIN_USERS.filter((user) => user.ci.includes(ciFilter.trim())),
-    [ciFilter]
+    () => users.filter((user) => user.ci.includes(ciFilter.trim())),
+    [users, ciFilter]
   )
 
   return (
-    <main className="admin-users">
-      <section className="admin-users__shell">
-        <header className="admin-users__top card-surface">
-          <div className="admin-users__brand-frame">
-            <div className="admin-users__brand">
-              <div className="admin-users__logo" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 3 3.5 8v8.5L12 21l8.5-4.5V8L12 3Zm0 2.1 6.5 3.8v6.2L12 19.1 5.5 15.1V8.9L12 5.1Z" fill="#1a5336" />
-                  <path d="M7.5 12h9v1.5h-9z" fill="#fff" />
-                </svg>
-              </div>
-              <div>
-                <p className="admin-users__eyebrow">BMSC</p>
-                <h1>Análisis Crediticio</h1>
-              </div>
-            </div>
-          </div>
-
-          <div className="admin-users__top-meta">
-            <span>Solicitudes y Usuarios</span>
-            <span>Vista Web Administrador</span>
-          </div>
-        </header>
-
-        <div className="admin-users__grid-layout">
+    <AdminLayout>
+      <main className="admin-users">
+        <section className="admin-users__shell">
+          <div className="admin-users__grid-layout">
           <section className="admin-users__left card-surface">
             <div className="admin-users__search">
               <label htmlFor="ci-search">CI:</label>
@@ -76,7 +96,9 @@ export function AdminRequestsUsersScreen() {
             </div>
 
             <div className="admin-users__cards-grid" aria-label="Usuarios filtrados">
-              {filteredUsers.map((user) => (
+              {isLoading && <p>Cargando usuarios...</p>}
+              {!isLoading && error && <p>{error}</p>}
+              {!isLoading && !error && filteredUsers.map((user) => (
                 <button
                   key={user.ci}
                   type="button"
@@ -96,11 +118,12 @@ export function AdminRequestsUsersScreen() {
           <aside className="admin-users__right card-surface">
             <div className="admin-users__panel-head">
               <h2>Solicitudes</h2>
-              <span>{ADMIN_REQUESTS.length} pendientes</span>
+              <span>{requests.length} pendientes</span>
             </div>
 
             <div className="admin-users__requests-list">
-              {ADMIN_REQUESTS.map((request) => (
+              {isLoading && <p>Cargando solicitudes...</p>}
+              {!isLoading && !error && requests.map((request) => (
                 <article key={request.id} className="admin-users__request-card">
                   <div className="admin-users__request-icon" aria-hidden="true">
                     <AlertIcon />
@@ -116,6 +139,7 @@ export function AdminRequestsUsersScreen() {
         </div>
       </section>
     </main>
+    </AdminLayout>
   )
 }
 
