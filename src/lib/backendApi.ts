@@ -37,6 +37,75 @@ export type DashboardAlert = {
   estado: string
 }
 
+export type CreditDetailPayment = {
+  id: string
+  title: string
+  amount: number
+  due_date: string
+  debt_id: string
+  requires_justification: boolean
+  estado: string
+  canal?: string | null
+  fecha_pago?: string | null
+  dias_atraso?: number
+}
+
+export type CreditAgreement = {
+  id: string
+  tipo: string
+  monto_deuda: number
+  descuento_mora: number
+  nuevo_plazo_meses?: number | null
+  nueva_cuota?: number | null
+  estado: string
+  fecha_inicio?: string | null
+  fecha_fin?: string | null
+}
+
+export type CreditCase = {
+  id: string
+  estado: string
+  prioridad: number
+  dias_mora: number
+  monto_en_mora: number
+  notas?: string | null
+  gestor_nombre?: string | null
+  fecha_apertura?: string | null
+  fecha_cierre?: string | null
+}
+
+export type CreditDetailResponse = {
+  cliente: {
+    id: string
+    nombre: string
+    ci: string
+    ciudad?: string | null
+    ingreso_mensual: number
+    calificacion: string
+    max_dias_mora: number
+  }
+  credito: DashboardCredit & {
+    tasa_interes: number
+    fecha_inicio?: string | null
+  }
+  resumen: {
+    saldo_pendiente: number
+    saldo_mora: number
+    saldo_pagado: number
+    pagos_registrados: number
+    pagos_con_retraso: number
+    alertas_activas: number
+    acuerdos_activos: number
+    casos_abiertos: number
+  }
+  pagos_realizados: CreditDetailPayment[]
+  proximas_cuotas: CreditDetailPayment[]
+  alertas: DashboardAlert[]
+  acuerdos: CreditAgreement[]
+  caso: CreditCase | null
+  mensaje: string
+}
+
 export type DashboardResponse = {
   cliente: {
     id: string
@@ -142,4 +211,21 @@ export async function fetchDashboardInitial(): Promise<DashboardResponse> {
   })
 
   return parseJsonResponse<DashboardResponse>(response)
+}
+
+export async function fetchCreditDetail(creditId: string): Promise<CreditDetailResponse> {
+  const session = getStoredSession()
+
+  if (!session) {
+    throw new Error('No hay una sesión activa.')
+  }
+
+  const response = await fetch(`${API_BASE_URL}/creditos/${creditId}`, {
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${session.token}`,
+    },
+  })
+
+  return parseJsonResponse<CreditDetailResponse>(response)
 }

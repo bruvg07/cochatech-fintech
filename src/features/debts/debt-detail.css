@@ -33,6 +33,62 @@
   font-weight: 600;
 }
 
+.debt-detail__eyebrow,
+.debt-detail__banner-eyebrow {
+  margin: 0 0 4px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.debt-detail__summary {
+  margin-top: 12px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.debt-detail__summary-item {
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(242, 244, 246, 0.8);
+  display: grid;
+  gap: 4px;
+}
+
+.debt-detail__summary-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.debt-detail__banner,
+.debt-detail__alert {
+  margin-top: 12px;
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.debt-detail__banner h2,
+.debt-detail__alert h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #191c1e;
+}
+
+.debt-detail__banner p,
+.debt-detail__alert p {
+  margin: 0;
+  color: #404942;
+}
+
 .debt-detail__tabs {
   display: flex;
   gap: 8px;

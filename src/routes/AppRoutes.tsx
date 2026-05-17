@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes, useNavigate, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useNavigate, useLocation, useParams } from 'react-router-dom'
 import { AuthScreen } from '../features/auth'
 import { DashboardScreen, CreditAnalysisAdmin, AdminRequestsUsersScreen, AdminUserDetailScreen } from '../features/dashboard'
 import { DebtsScreen } from '../features/debts'
@@ -7,8 +7,8 @@ import PaymentScreen from '../features/debts/PaymentScreen'
 import { RenegotiateScreen } from '../features/renegotiate/RenegotiateScreen'
 import { BottomNav } from '../components/BottomNav'
 import type { Debt, Payment } from '../features/debts'
-import { useMemo } from 'react'
-import { clearSession, getStoredSession, storeSession, type LoginResponse } from '../lib/backendApi'
+import { useEffect, useState } from 'react'
+import { clearSession, fetchCreditDetail, getStoredSession, storeSession, type CreditDetailResponse, type LoginResponse } from '../lib/backendApi'
 
 function DebtsRoute() {
   const navigate = useNavigate()
@@ -34,17 +34,91 @@ function DashboardRoute() {
 }
 
 function DebtDetailRoute() {
-  const location = useLocation()
-  const stateDebt = (location.state as any)?.debt as Debt | undefined
+  const creditId = useParams().id
   const navigate = useNavigate()
+  const [detail, setDetail] = useState<CreditDetailResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const debt = useMemo(() => stateDebt, [stateDebt])
+  useEffect(() => {
+    let alive = true
 
-  if (!debt) return <Navigate to="/debts" replace />
+    async function loadCreditDetail() {
+      if (!creditId) {
+        setError('Crédito no encontrado.')
+        setIsLoading(false)
+        return
+      }
+
+      setIsLoading(true)
+      setError(null)
+
+      try {
+        const response = await fetchCreditDetail(creditId)
+        if (alive) {
+          setDetail(response)
+        }
+      } catch (loadError) {
+        if (!alive) {
+          return
+        }
+
+        setError(loadError instanceof Error ? loadError.message : 'No se pudo cargar el crédito.')
+      } finally {
+        if (alive) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadCreditDetail()
+
+    return () => {
+      alive = false
+    }
+  }, [creditId])
+
+
+  if (isLoading) {
+    return (
+      <main className="debt-detail">
+        <section className="debt-detail__body">
+          <article className="installment-card card-surface">
+            <div className="installment-card__head">
+              <h3>Cargando crédito...</h3>
+            </div>
+          </article>
+        </section>
+      </main>
+    )
+  }
+
+  if (error || !detail) {
+    return (
+      <main className="debt-detail">
+        <section className="debt-detail__body">
+          <article className="installment-card card-surface">
+            <div className="installment-card__head">
+              <h3>No se pudo abrir el crédito</h3>
+            </div>
+            <div className="installment-card__row">
+              <span className="label">Error</span>
+              <span>{error ?? 'Intenta volver a la lista de créditos.'}</span>
+            </div>
+            <div className="installment-card__cta-row">
+              <button className="btn-pay" type="button" onClick={() => navigate('/debts')}>
+                Volver a créditos
+              </button>
+            </div>
+          </article>
+        </section>
+      </main>
+    )
+  }
 
   const handlePay = (p: Payment) => navigate(`/payment/${p.id}`, { state: { payment: p } })
 
-  return <DebtDetail debt={debt} onBack={() => navigate(-1)} onPay={handlePay} />
+  return <DebtDetail detail={detail} onBack={() => navigate('/debts')} onPay={handlePay} />
 }
 
 function PaymentRoute() {
