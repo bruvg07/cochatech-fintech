@@ -37,13 +37,22 @@ function WalletIcon() {
 }
 
 function riskStyles(nivelRiesgo: string) {
-  switch (nivelRiesgo.toLowerCase()) {
-    case 'critico':
-      return { color: '#c0392b', label: 'Riesgo critico' }
-    case 'alto':
-      return { color: '#d98c1f', label: 'Riesgo alto' }
-    case 'medio':
-      return { color: '#b3975a', label: 'Riesgo medio' }
+  switch (nivelRiesgo.toUpperCase()) {
+    case 'F':
+    case 'CRITICO':
+      return { color: '#b42318', label: 'Riesgo critico' }
+    case 'E':
+      return { color: '#d92d20', label: 'Riesgo muy alto' }
+    case 'D':
+    case 'ALTO':
+      return { color: '#f97316', label: 'Riesgo alto' }
+    case 'C':
+    case 'MEDIO':
+      return { color: '#f59e0b', label: 'Riesgo medio' }
+    case 'B':
+      return { color: '#d4a017', label: 'Riesgo controlado' }
+    case 'A':
+    case 'BAJO':
     default:
       return { color: '#00a67d', label: 'Riesgo bajo' }
   }
@@ -134,7 +143,7 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
   }, [onLogout])
 
   const grade = dashboard?.cliente.calificacion ?? 'A'
-  const risk = riskStyles(dashboard?.score.nivel_riesgo ?? grade ?? 'bajo')
+  const risk = riskStyles(grade)
   const staticMessage = getGradeMessage(grade)
 
   if (isLoading) {
