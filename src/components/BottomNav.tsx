@@ -43,7 +43,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
         <span className="bottom-nav__icon">
           <DebtIcon />
         </span>
-        <span className="bottom-nav__label">Deuda</span>
+        <span className="bottom-nav__label">Créditos</span>
       </button>
 
       <button

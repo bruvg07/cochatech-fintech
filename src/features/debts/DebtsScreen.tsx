@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useState } from 'react'
+import { fetchDashboardInitial, type DashboardCredit } from '../../lib/backendApi'
 import './debts.css'
 
 export interface Debt {
@@ -12,6 +14,53 @@ export interface Debt {
 
 interface DebtsScreenProps {
   onDebtSelect?: (debt: Debt) => void
+}
+
+type DashboardSnapshot = Awaited<ReturnType<typeof fetchDashboardInitial>>
+
+function mapCreditToDebt(credit: DashboardCredit): Debt {
+  const tipoCredito = credit.tipo_credito.toLowerCase()
+
+  return {
+    id: credit.id,
+    tipo: tipoCredito.includes('vivi') ? 'VIVIENDA' : tipoCredito.includes('micro') ? 'MICROEMPRESA' : 'CONSUMO',
+    saldoPendiente: credit.saldo_pendiente,
+    cuotaMensual: credit.cuota_mensual,
+    diasMora: credit.dias_mora,
+    estado: credit.estado.toUpperCase().includes('MORA')
+      ? 'EN_MORA'
+      : credit.estado.toUpperCase().includes('CANCEL')
+        ? 'CANCELADO'
+        : 'VIGENTE',
+    proximaFecha: credit.fecha_vencimiento ?? new Date().toISOString().slice(0, 10),
+  }
+}
+
+function getCreditLabel(type: Debt['tipo']) {
+  if (type === 'VIVIENDA') {
+    return 'Crédito de vivienda'
+  }
+
+  if (type === 'MICROEMPRESA') {
+    return 'Crédito microempresa'
+  }
+
+  return 'Crédito de consumo'
+}
+
+function formatCurrency(value: number) {
+  return value.toLocaleString('es-BO', {
+    style: 'currency',
+    currency: 'BOB',
+    minimumFractionDigits: 0,
+  })
+}
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat('es-BO', {
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date(value))
 }
 
 function DebtTypeIcon(type: string) {
@@ -37,58 +86,106 @@ function DebtTypeIcon(type: string) {
 }
 
 export function DebtsScreen({ onDebtSelect }: DebtsScreenProps) {
-  const staticDebts: Debt[] = [
-    {
-      id: '1',
-      tipo: 'CONSUMO',
-      saldoPendiente: 3500,
-      cuotaMensual: 350,
-      diasMora: 0,
-      estado: 'VIGENTE',
-      proximaFecha: '2025-06-15',
-    },
-    {
-      id: '2',
-      tipo: 'VIVIENDA',
-      saldoPendiente: 4200,
-      cuotaMensual: 500,
-      diasMora: 5,
-      estado: 'VIGENTE',
-      proximaFecha: '2025-06-20',
-    },
-    {
-      id: '3',
-      tipo: 'MICROEMPRESA',
-      saldoPendiente: 2300,
-      cuotaMensual: 400,
-      diasMora: 0,
-      estado: 'VIGENTE',
-      proximaFecha: '2025-06-10',
-    },
-  ]
+  const [dashboard, setDashboard] = useState<DashboardSnapshot | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let alive = true
+
+    async function loadCredits() {
+      setIsLoading(true)
+      setError(null)
+
+      try {
+        const response = await fetchDashboardInitial()
+        if (alive) {
+          setDashboard(response)
+        }
+      } catch (loadError) {
+        if (!alive) {
+          return
+        }
+
+        setError(loadError instanceof Error ? loadError.message : 'No se pudo cargar tus créditos.')
+      } finally {
+        if (alive) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadCredits()
+
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  const credits = useMemo(() => dashboard?.creditos.map(mapCreditToDebt) ?? [], [dashboard])
+  const totalPending = dashboard?.resumen.saldo_pendiente ?? 0
+  const nextPayment = useMemo(() => {
+    if (credits.length === 0) {
+      return 0
+    }
+
+    return credits.reduce((lowest, current) => (current.cuotaMensual < lowest ? current.cuotaMensual : lowest), credits[0].cuotaMensual)
+  }, [credits])
+
+  if (isLoading) {
+    return (
+      <main className="debts-screen">
+        <section className="debts-content">
+          <header className="debts-header">
+            <h1>Mis créditos</h1>
+            <p className="debts-header__subtitle">Cargando tus créditos activos...</p>
+          </header>
+        </section>
+      </main>
+    )
+  }
+
+  if (error) {
+    return (
+      <main className="debts-screen">
+        <section className="debts-content">
+          <header className="debts-header">
+            <h1>Mis créditos</h1>
+            <p className="debts-header__subtitle">No pudimos cargar la información.</p>
+          </header>
+          <div className="debts-summary card-surface">
+            <div className="debts-summary__item">
+              <span className="debts-summary__label">Error</span>
+              <strong className="debts-summary__value">{error}</strong>
+            </div>
+          </div>
+        </section>
+      </main>
+    )
+  }
 
   return (
     <main className="debts-screen">
       <header className="debts-header">
-        <h1>Mis deudas</h1>
+        <h1>Mis créditos</h1>
         <p className="debts-header__subtitle">Tus créditos activos y su estado</p>
       </header>
 
       <section className="debts-content">
         <div className="debts-summary card-surface">
           <div className="debts-summary__item">
-            <span className="debts-summary__label">Total deuda</span>
-            <strong className="debts-summary__value">9,000 Bs.</strong>
+            <span className="debts-summary__label">Saldo pendiente</span>
+            <strong className="debts-summary__value">{formatCurrency(totalPending)}</strong>
           </div>
           <div className="debts-summary__divider" />
           <div className="debts-summary__item">
-            <span className="debts-summary__label">Próximo pago</span>
-            <strong className="debts-summary__value">350 Bs.</strong>
+            <span className="debts-summary__label">Próxima cuota</span>
+            <strong className="debts-summary__value">{formatCurrency(nextPayment)}</strong>
           </div>
         </div>
 
         <div className="debts-list">
-          {staticDebts.map((debt) => (
+          {credits.map((debt) => (
             <button
               key={debt.id}
               className={`debt-card card-surface debt-card--${debt.estado.toLowerCase()}`}
@@ -99,11 +196,7 @@ export function DebtsScreen({ onDebtSelect }: DebtsScreenProps) {
                 <span className="debt-card__icon">{DebtTypeIcon(debt.tipo)}</span>
                 <div className="debt-card__title-group">
                   <h3 className="debt-card__type">
-                    {debt.tipo === 'CONSUMO'
-                      ? 'Crédito de consumo'
-                      : debt.tipo === 'VIVIENDA'
-                        ? 'Crédito de vivienda'
-                        : 'Crédito microempresa'}
+                    {getCreditLabel(debt.tipo)}
                   </h3>
                   {debt.diasMora > 0 && (
                     <span className="debt-card__mora-badge">{debt.diasMora} días de mora</span>
@@ -140,18 +233,13 @@ export function DebtsScreen({ onDebtSelect }: DebtsScreenProps) {
                 </div>
 
                 <div className="debt-card__row debt-card__row--highlight">
-                  <span className="debt-card__label">Próximo pago</span>
-                  <strong>
-                    {new Intl.DateTimeFormat('es-BO', {
-                      month: 'short',
-                      day: 'numeric',
-                    }).format(new Date(debt.proximaFecha))}
-                  </strong>
+                  <span className="debt-card__label">Vencimiento</span>
+                  <strong>{formatDate(debt.proximaFecha)}</strong>
                 </div>
               </div>
 
               <div className="debt-card__footer">
-                <span className="debt-card__cta">Ver detalles →</span>
+                <span className="debt-card__cta">Ver crédito →</span>
               </div>
             </button>
           ))}

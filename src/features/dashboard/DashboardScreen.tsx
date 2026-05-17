@@ -1,4 +1,5 @@
-import type { CSSProperties } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
+import { clearSession, fetchDashboardInitial, type DashboardResponse } from '../../lib/backendApi'
 import './dashboard.css'
 
 type DashboardScreenProps = {
@@ -30,16 +31,113 @@ function WalletIcon() {
   )
 }
 
+function riskStyles(nivelRiesgo: string) {
+  switch (nivelRiesgo.toLowerCase()) {
+    case 'critico':
+      return { color: '#c0392b', label: 'Riesgo crítico' }
+    case 'alto':
+      return { color: '#d98c1f', label: 'Riesgo alto' }
+    case 'medio':
+      return { color: '#b3975a', label: 'Riesgo medio' }
+    default:
+      return { color: '#00a67d', label: 'Riesgo bajo' }
+  }
+}
+
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat('es-BO', { maximumFractionDigits: 0 }).format(value)
+}
+
 export function DashboardScreen({ onLogout }: DashboardScreenProps) {
-  const riskColor = '#00d1b2'
+  const [dashboard, setDashboard] = useState<DashboardResponse | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    let alive = true
+
+    async function loadDashboard() {
+      setIsLoading(true)
+      setError(null)
+
+      try {
+        const response = await fetchDashboardInitial()
+        if (alive) {
+          setDashboard(response)
+        }
+      } catch (dashboardError) {
+        if (!alive) {
+          return
+        }
+
+        const message = dashboardError instanceof Error ? dashboardError.message : 'No se pudo cargar el dashboard.'
+        setError(message)
+        clearSession()
+        onLogout?.()
+      } finally {
+        if (alive) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadDashboard()
+
+    return () => {
+      alive = false
+    }
+  }, [onLogout])
+
+  const risk = riskStyles(dashboard?.score.nivel_riesgo ?? dashboard?.cliente.calificacion ?? 'bajo')
+
+  if (isLoading) {
+    return (
+      <main className="dashboard">
+        <section className="dashboard__shell">
+          <header className="dashboard__header card-surface">
+            <div>
+              <p className="dashboard__eyebrow">Escudo Financiero</p>
+              <h1>Cargando tu información...</h1>
+            </div>
+          </header>
+        </section>
+      </main>
+    )
+  }
+
+  if (error || !dashboard) {
+    return (
+      <main className="dashboard">
+        <section className="dashboard__shell">
+          <header className="dashboard__header card-surface">
+            <div>
+              <p className="dashboard__eyebrow">Escudo Financiero</p>
+              <h1>No se pudo cargar el dashboard</h1>
+            </div>
+            {onLogout && (
+              <button className="dashboard__logout" type="button" onClick={onLogout}>
+                Volver al login
+              </button>
+            )}
+          </header>
+          <section className="dashboard__banner card-surface">
+            <p className="dashboard__banner-title">Error</p>
+            <p>{error ?? 'Intenta iniciar sesión nuevamente.'}</p>
+          </section>
+        </section>
+      </main>
+    )
+  }
+
+  const { cliente, score, resumen, mensaje } = dashboard
 
   return (
     <main className="dashboard">
       <section className="dashboard__shell">
         <header className="dashboard__header card-surface">
           <div>
-            <p className="dashboard__eyebrow">Escudo Financiero</p>
-            <h1>Hola Sarah!</h1>
+            <p className="dashboard__eyebrow">{cliente.ciudad ?? 'Escudo Financiero'}</p>
+            <h1>Hola {cliente.nombre.split(' ')[0]}!</h1>
           </div>
 
           {onLogout && (
@@ -53,29 +151,26 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
           <div className="dashboard__score">
             <div
               className="dashboard__score-ring"
-              style={{ '--risk-color': riskColor } as CSSProperties}
+              style={{ '--risk-color': risk.color } as CSSProperties}
             >
-              <span className="dashboard__score-letter">A</span>
+              <span className="dashboard__score-letter">{cliente.calificacion}</span>
             </div>
 
             <div className="dashboard__score-copy">
               <p className="dashboard__label">Calificación ASFI</p>
-              <h2>Tu salud financiera se ve sólida</h2>
+              <h2>{mensaje}</h2>
               <p>
-                Mantienes un comportamiento crediticio saludable y el historial
-                está bajo control.
+                Registra {score.numero_creditos} créditos y {resumen.pagos_con_retraso} pagos con retraso. El monitoreo
+                se actualiza desde la API.
               </p>
-              <div className="dashboard__score-chip">Riesgo bajo</div>
+              <div className="dashboard__score-chip">{risk.label}</div>
             </div>
           </div>
         </section>
 
         <section className="dashboard__banner card-surface">
           <p className="dashboard__banner-title">IA financiera</p>
-          <p>
-            ¡Vas genial! Sigue así para mantener tu récord y conservar acceso a
-            mejores condiciones.
-          </p>
+          <p>{mensaje}</p>
         </section>
 
         <section className="dashboard__metrics">
@@ -84,7 +179,7 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
               <WalletIcon />
             </span>
             <p>Deuda actual</p>
-            <strong>10 000 Bs.</strong>
+            <strong>{formatCurrency(resumen.saldo_pendiente)} Bs.</strong>
           </article>
 
           <article className="dashboard__metric card-surface">
@@ -92,7 +187,7 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
               <TrendIcon />
             </span>
             <p>Deuda pagada</p>
-            <strong>15 000 Bs.</strong>
+            <strong>{formatCurrency(resumen.saldo_pagado)} Bs.</strong>
           </article>
 
           <article className="dashboard__metric card-surface dashboard__metric--full">
@@ -100,7 +195,7 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
               <HomeIcon />
             </span>
             <p>Total crédito</p>
-            <strong>25 000 Bs.</strong>
+            <strong>{formatCurrency(resumen.total_creditos)} Bs.</strong>
           </article>
         </section>
       </section>

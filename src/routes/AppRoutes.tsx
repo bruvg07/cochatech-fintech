@@ -8,37 +8,7 @@ import { RenegotiateScreen } from '../features/renegotiate/RenegotiateScreen'
 import { BottomNav } from '../components/BottomNav'
 import type { Debt, Payment } from '../features/debts'
 import { useMemo } from 'react'
-
-// Local static debts used for demo routes; in a real app this comes from API / store
-const staticDebts: Debt[] = [
-  {
-    id: '1',
-    tipo: 'CONSUMO',
-    saldoPendiente: 3500,
-    cuotaMensual: 350,
-    diasMora: 0,
-    estado: 'VIGENTE',
-    proximaFecha: '2025-06-15',
-  },
-  {
-    id: '2',
-    tipo: 'VIVIENDA',
-    saldoPendiente: 4200,
-    cuotaMensual: 500,
-    diasMora: 5,
-    estado: 'VIGENTE',
-    proximaFecha: '2025-06-20',
-  },
-  {
-    id: '3',
-    tipo: 'MICROEMPRESA',
-    saldoPendiente: 2300,
-    cuotaMensual: 400,
-    diasMora: 0,
-    estado: 'VIGENTE',
-    proximaFecha: '2025-06-10',
-  },
-]
+import { clearSession, getStoredSession, storeSession, type LoginResponse } from '../lib/backendApi'
 
 function DebtsRoute() {
   const navigate = useNavigate()
@@ -57,7 +27,7 @@ function DashboardRoute() {
   const navigate = useNavigate()
   return (
     <>
-      <DashboardScreen />
+      <DashboardScreen onLogout={() => { clearSession(); navigate('/auth') }} />
       <BottomNav activeTab="home" onTabChange={(t) => navigate(t === 'home' ? '/dashboard' : t === 'debts' ? '/debts' : '/renegotiate')} />
     </>
   )
@@ -66,10 +36,11 @@ function DashboardRoute() {
 function DebtDetailRoute() {
   const location = useLocation()
   const stateDebt = (location.state as any)?.debt as Debt | undefined
-  const debt = useMemo(() => stateDebt ?? staticDebts.find((d) => d.id === (location.pathname.split('/').pop() ?? '')), [location])
   const navigate = useNavigate()
 
-  if (!debt) return <p>Deuda no encontrada</p>
+  const debt = useMemo(() => stateDebt, [stateDebt])
+
+  if (!debt) return <Navigate to="/debts" replace />
 
   const handlePay = (p: Payment) => navigate(`/payment/${p.id}`, { state: { payment: p } })
 
@@ -81,7 +52,7 @@ function PaymentRoute() {
   const payment = (location.state as any)?.payment as Payment | undefined
   const navigate = useNavigate()
 
-  if (!payment) return <p>Pago no encontrado</p>
+  if (!payment) return <Navigate to="/debts" replace />
 
   const handleBack = () => navigate(-1)
   const handleVerify = () => navigate(-1)
@@ -118,5 +89,16 @@ export default AppRoutes
 
 function AuthWrapper() {
   const navigate = useNavigate()
-  return <AuthScreen onSubmit={() => navigate('/dashboard')} />
+  const session = getStoredSession()
+
+  if (session) {
+    return <Navigate to="/dashboard" replace />
+  }
+
+  const handleAuthenticated = (loginResponse: LoginResponse) => {
+    storeSession({ token: loginResponse.token, cliente: loginResponse.cliente })
+    navigate('/dashboard')
+  }
+
+  return <AuthScreen onAuthenticated={handleAuthenticated} />
 }

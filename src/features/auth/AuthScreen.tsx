@@ -1,9 +1,10 @@
-import type { FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
+import { login, storeSession, type LoginResponse } from '../../lib/backendApi'
 
 import './auth.css'
 
 type AuthScreenProps = {
-  onSubmit: () => void
+  onAuthenticated: (session: LoginResponse) => void
 }
 
 function CardIdIcon() {
@@ -42,10 +43,29 @@ function FingerprintBadge() {
   )
 }
 
-export function AuthScreen({ onSubmit }: AuthScreenProps) {
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
+  const [error, setError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    onSubmit()
+
+    const formData = new FormData(event.currentTarget)
+    const ci = String(formData.get('carnet') ?? '').trim()
+    const password = String(formData.get('password') ?? '')
+
+    setError(null)
+    setIsSubmitting(true)
+
+    try {
+      const session = await login({ ci, password })
+      storeSession({ token: session.token, cliente: session.cliente })
+      onAuthenticated(session)
+    } catch (loginError) {
+      setError(loginError instanceof Error ? loginError.message : 'No se pudo iniciar sesión.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -128,8 +148,14 @@ export function AuthScreen({ onSubmit }: AuthScreenProps) {
 
             <button className="auth-submit" type="submit">
               <ShieldIcon />
-              Ingresar
+              {isSubmitting ? 'Ingresando...' : 'Ingresar'}
             </button>
+
+            {error && (
+              <p className="auth-form__error" role="alert">
+                {error}
+              </p>
+            )}
           </form>
 
           <div className="auth-support">
@@ -139,8 +165,8 @@ export function AuthScreen({ onSubmit }: AuthScreenProps) {
             </div>
 
             <p className="auth-support__note">
-              Diseñado para pantalla móvil, con instalación tipo PWA y estilo
-              institucional.
+              Acceso demo: `12345678` / `123456`. Diseñado para pantalla móvil,
+              con instalación tipo PWA y estilo institucional.
             </p>
           </div>
         </section>
