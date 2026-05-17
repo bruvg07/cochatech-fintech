@@ -1,5 +1,5 @@
 ---
-name: Escudo Financiero
+name: Mercantil AlivIA
 colors:
   surface: '#f8f9fb'
   surface-dim: '#d8dadc'
@@ -103,8 +103,8 @@ spacing:
   safe-area: 1.25rem
 ---
 
-# Sistema de Diseño: BMSC - Escudo Financiero
-Este documento define las guías de estilo y componentes visuales para la PWA "Escudo Financiero", asegurando coherencia total con la aplicación móvil nativa del Banco Mercantil Santa Cruz (BMSC).
+# Sistema de Diseño: BMSC - Mercantil AlivIA
+Este documento define las guías de estilo y componentes visuales para la PWA "Mercantil AlivIA", asegurando coherencia total con la aplicación móvil nativa del Banco Mercantil Santa Cruz (BMSC).
 ## 🎨 1. Paleta de Colores
 El esquema de colores transmite seguridad, formalidad y claridad. Se basa en contrastes fuertes entre fondos claros y acentos en verde oscuro corporativo.
 | Color | Hexadecimal | Uso Principal |
@@ -162,7 +162,7 @@ Existen tres jerarquías claras de botones interactivos:
 * **Separación entre Tarjetas:** 12px a 16px vertical y horizontalmente.
 * **Alineación:** Mayormente centrada para acciones principales (Dashboard) y alineada a la izquierda para listas de información y formularios.
 ---
-## 🚀 6. Adaptación para "Escudo Financiero" (Directrices Adicionales)
+## 🚀 6. Adaptación para "Mercantil AlivIA" (Directrices Adicionales)
 Para el módulo de prevención y gestión de mora, se utilizarán estos mismos componentes, incorporando las siguientes reglas lógicas:
 * **Empatía Visual:** Para notificar sobre un atraso en pagos, **NO se usarán textos ni fondos rojos agresivos**. Se utilizarán tarjetas estándar con el título en Verde Corporativo y un texto descriptivo neutro, invitando a la acción ("Ajustar plan", "Renegociar").
 * **Gamificación Sutil:** Si el usuario elige un plan de fraccionamiento o paga a tiempo, se pueden incorporar micro-interacciones (ej. el ícono de `check` cambia a Verde Claro temporalmente) usando estrictamente la paleta de colores definida.

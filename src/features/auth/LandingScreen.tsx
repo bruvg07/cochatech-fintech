@@ -56,7 +56,7 @@ export function LandingScreen() {
       <section className="landing__hero">
         <div className="landing__hero-copy">
           <span className="landing__eyebrow">PWA bancaria lista para instalar</span>
-          <h1 className="landing__title">Escudo Financiero</h1>
+          <h1 className="landing__title">Mercantil AlivIA</h1>
           <p className="landing__subtitle">
             Una entrada clara para que cada perfil comience en la pantalla correcta y pueda instalar la app en segundos.
           </p>
@@ -91,7 +91,7 @@ export function LandingScreen() {
 
         <div className="landing__hero-card card-surface">
           <div className="landing__hero-brand">
-            <img className="landing__logo" src={logoImage} alt="Logo de Escudo Financiero" />
+            <img className="landing__logo" src={logoImage} alt="Logo de Mercantil AlivIA" />
             <div>
               <p className="landing__panel-kicker">Experiencia principal</p>
               <h2>Instala y elige tu acceso</h2>
@@ -146,7 +146,7 @@ export function LandingScreen() {
       </section>
 
       <footer className="landing__footer">
-        <p>Banco Mercantil Santa Cruz | Escudo Financiero 2026</p>
+        <p>Mercantil Santa Cruz | Mercantil AlivIA 2026</p>
       </footer>
     </main>
   )

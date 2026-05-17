@@ -96,7 +96,7 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
         <section className="dashboard__shell">
           <header className="dashboard__header card-surface">
             <div>
-              <p className="dashboard__eyebrow">Escudo Financiero</p>
+              <p className="dashboard__eyebrow">Mercantil AlivIA</p>
               <h1>Cargando tu información...</h1>
             </div>
           </header>
@@ -111,7 +111,7 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
         <section className="dashboard__shell">
           <header className="dashboard__header card-surface">
             <div>
-              <p className="dashboard__eyebrow">Escudo Financiero</p>
+              <p className="dashboard__eyebrow">Mercantil AlivIA</p>
               <h1>No se pudo cargar el dashboard</h1>
             </div>
             {onLogout && (
@@ -136,7 +136,7 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
       <section className="dashboard__shell">
         <header className="dashboard__header card-surface">
           <div>
-            <p className="dashboard__eyebrow">{cliente.ciudad ?? 'Escudo Financiero'}</p>
+            <p className="dashboard__eyebrow">{cliente.ciudad ?? 'Mercantil AlivIA'}</p>
             <h1>Hola {cliente.nombre.split(' ')[0]}!</h1>
           </div>
 

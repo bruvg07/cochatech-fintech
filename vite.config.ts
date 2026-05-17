@@ -9,9 +9,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
 
       manifest: {
-        name: 'Escudo Financiero',
-        short_name: 'Escudo Financiero',
-        description: 'PWA institucional para acceso seguro del Banco Mercantil Santa Cruz',
+        name: 'Mercantil AlivIA',
+        short_name: 'Mercantil AlivIA',
+        description: 'PWA institucional Mercantil AlivIA para acceso y gestion crediticia',
         theme_color: '#0a4c3a',
         background_color: '#0a4c3a',
         display: 'standalone',
