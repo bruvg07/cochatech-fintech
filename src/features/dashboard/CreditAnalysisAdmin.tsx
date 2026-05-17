@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react'
 import './credit-analysis.css'
 
-const GRADES = ['A', 'B', 'C', 'D', 'E', 'F']
-
 type DataRow = { grade: string; count: number }
 
 export function CreditAnalysisAdmin() {

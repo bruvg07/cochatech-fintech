@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes, useNavigate, useLocation } from 'react-router-dom'
 import { AuthScreen } from '../features/auth'
-import { DashboardScreen, CreditAnalysisAdmin } from '../features/dashboard'
+import { DashboardScreen, CreditAnalysisAdmin, AdminRequestsUsersScreen, AdminUserDetailScreen } from '../features/dashboard'
 import { DebtsScreen } from '../features/debts'
 import DebtDetail from '../features/debts/DebtDetail'
 import PaymentScreen from '../features/debts/PaymentScreen'
@@ -83,7 +83,10 @@ function PaymentRoute() {
 
   if (!payment) return <p>Pago no encontrado</p>
 
-  return <PaymentScreen payment={payment} onBack={() => navigate(-1)} onVerify={(id) => navigate(-1)} />
+  const handleBack = () => navigate(-1)
+  const handleVerify = () => navigate(-1)
+
+  return <PaymentScreen payment={payment} onBack={handleBack} onVerify={handleVerify} />
 }
 
 export function AppRoutes() {
@@ -104,6 +107,8 @@ export function AppRoutes() {
         <RenegotiateScreen />
       </>} />
       <Route path="/admin/dashboard" element={<CreditAnalysisAdmin />} />
+      <Route path="/admin/requests-users" element={<AdminRequestsUsersScreen />} />
+      <Route path="/admin/requests-users/:ci" element={<AdminUserDetailScreen />} />
       <Route path="*" element={<Navigate to="/auth" replace />} />
     </Routes>
   )

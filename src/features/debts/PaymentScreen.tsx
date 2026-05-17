@@ -5,7 +5,7 @@ import type { Payment } from './DebtDetail'
 type PaymentScreenProps = {
   payment: Payment
   onBack: () => void
-  onVerify: (id: string) => void
+  onVerify: () => void
 }
 
 export function PaymentScreen({ payment, onBack, onVerify }: PaymentScreenProps) {
@@ -18,7 +18,7 @@ export function PaymentScreen({ payment, onBack, onVerify }: PaymentScreenProps)
   }
 
   const handleConfirmVerification = () => {
-    onVerify(payment.id)
+    onVerify()
     setShowVerifyModal(false)
     setJustification('')
   }
