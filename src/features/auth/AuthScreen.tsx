@@ -4,7 +4,8 @@ import { login, storeSession, type LoginResponse } from '../../lib/backendApi'
 import './auth.css'
 
 type AuthScreenProps = {
-  onAuthenticated: (session: LoginResponse) => void
+  role: 'user' | 'admin'
+  onAuthenticated: (session: LoginResponse, role: 'user' | 'admin') => void
 }
 
 function CardIdIcon() {
@@ -43,9 +44,10 @@ function FingerprintBadge() {
   )
 }
 
-export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
+export function AuthScreen({ role, onAuthenticated }: AuthScreenProps) {
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const isAdmin = role === 'admin'
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -59,10 +61,10 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
 
     try {
       const session = await login({ ci, password })
-      storeSession({ token: session.token, cliente: session.cliente })
-      onAuthenticated(session)
+      storeSession({ token: session.token, cliente: session.cliente, role })
+      onAuthenticated(session, role)
     } catch (loginError) {
-      setError(loginError instanceof Error ? loginError.message : 'No se pudo iniciar sesión.')
+      setError(loginError instanceof Error ? loginError.message : 'No se pudo iniciar sesion.')
     } finally {
       setIsSubmitting(false)
     }
@@ -100,11 +102,12 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
           </div>
 
           <div className="auth-hero__copy">
-            <p className="auth-kicker">Acceso seguro</p>
-            <h2>Inicia sesión para continuar</h2>
+            <p className="auth-kicker">{isAdmin ? 'Acceso administrativo' : 'Acceso seguro'}</p>
+            <h2>{isAdmin ? 'Ingresa al panel de analisis' : 'Inicia sesion para continuar'}</h2>
             <p>
-              Ingresa tu carnet de identidad y tu contraseña para acceder a una
-              experiencia instalable, clara y protegida.
+              {isAdmin
+                ? 'Accede a la vista de seguimiento para revisar cartera, solicitudes y comportamiento crediticio.'
+                : 'Ingresa tu carnet de identidad y tu contrasena para acceder a una experiencia instalable, clara y protegida.'}
             </p>
           </div>
         </section>
@@ -130,7 +133,7 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
             </div>
 
             <div className="auth-field">
-              <label htmlFor="password">Contraseña</label>
+              <label htmlFor="password">Contrasena</label>
               <div className="auth-input-shell">
                 <span className="auth-input-shell__icon" aria-hidden="true">
                   <PasswordIcon />
@@ -140,7 +143,7 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
                   name="password"
                   type="password"
                   autoComplete="current-password"
-                  placeholder="Ingresa tu contraseña"
+                  placeholder="Ingresa tu contrasena"
                   required
                 />
               </div>
@@ -148,7 +151,7 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
 
             <button className="auth-submit" type="submit">
               <ShieldIcon />
-              {isSubmitting ? 'Ingresando...' : 'Ingresar'}
+              {isSubmitting ? 'Ingresando...' : isAdmin ? 'Entrar como administrador' : 'Ingresar'}
             </button>
 
             {error && (
@@ -161,12 +164,13 @@ export function AuthScreen({ onAuthenticated }: AuthScreenProps) {
           <div className="auth-support">
             <div className="auth-support__chip">
               <ShieldIcon />
-              <span>Conexión cifrada SSL de 256 bits</span>
+              <span>Conexion cifrada SSL de 256 bits</span>
             </div>
 
             <p className="auth-support__note">
-              Acceso demo: `12345678` / `123456`. Diseñado para pantalla móvil,
-              con instalación tipo PWA y estilo institucional.
+              {isAdmin
+                ? 'Usa tus credenciales de analista para entrar al panel web administrativo.'
+                : 'Acceso demo: `12345678` / `123456`. Disenado para pantalla movil, con instalacion tipo PWA y estilo institucional.'}
             </p>
           </div>
         </section>

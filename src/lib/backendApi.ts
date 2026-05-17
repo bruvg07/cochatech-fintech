@@ -246,22 +246,32 @@ export type AdminUserDetailResponse = {
 export type StoredSession = {
   token: string
   cliente: LoginResponse['cliente']
+  role: 'user' | 'admin'
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/api'
 const TOKEN_KEY = 'escudo_financiero_token'
 const CLIENT_KEY = 'escudo_financiero_cliente'
+const ROLE_KEY = 'escudo_financiero_role'
 
 export function getStoredSession(): StoredSession | null {
   const token = localStorage.getItem(TOKEN_KEY)
   const clienteRaw = localStorage.getItem(CLIENT_KEY)
+  const roleRaw = localStorage.getItem(ROLE_KEY)
 
-  if (!token || !clienteRaw) {
+  if (!token || !clienteRaw || !roleRaw) {
     return null
   }
 
   try {
-    return { token, cliente: JSON.parse(clienteRaw) as StoredSession['cliente'] }
+    const role = roleRaw === 'admin' ? 'admin' : roleRaw === 'user' ? 'user' : null
+
+    if (!role) {
+      clearSession()
+      return null
+    }
+
+    return { token, cliente: JSON.parse(clienteRaw) as StoredSession['cliente'], role }
   } catch {
     clearSession()
     return null
@@ -271,11 +281,13 @@ export function getStoredSession(): StoredSession | null {
 export function storeSession(session: StoredSession) {
   localStorage.setItem(TOKEN_KEY, session.token)
   localStorage.setItem(CLIENT_KEY, JSON.stringify(session.cliente))
+  localStorage.setItem(ROLE_KEY, session.role)
 }
 
 export function clearSession() {
   localStorage.removeItem(TOKEN_KEY)
   localStorage.removeItem(CLIENT_KEY)
+  localStorage.removeItem(ROLE_KEY)
 }
 
 async function parseJsonResponse<T>(response: Response): Promise<T> {

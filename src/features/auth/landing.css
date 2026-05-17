@@ -1,0 +1,368 @@
+.landing {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: 32px 20px 24px;
+  background:
+    radial-gradient(circle at top left, rgba(188, 166, 96, 0.18), transparent 28%),
+    linear-gradient(160deg, #0f2c20 0%, #194d35 42%, #f4efe3 42%, #f7f4ec 100%);
+  color: #173224;
+}
+
+.landing__halo {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(12px);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.landing__halo--top {
+  top: -120px;
+  right: -90px;
+  width: 320px;
+  height: 320px;
+  background: rgba(210, 186, 120, 0.35);
+}
+
+.landing__halo--bottom {
+  bottom: -120px;
+  left: -70px;
+  width: 260px;
+  height: 260px;
+  background: rgba(87, 135, 106, 0.28);
+}
+
+.landing__hero,
+.landing__roles,
+.landing__footer {
+  position: relative;
+  z-index: 1;
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+.landing__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 440px);
+  gap: 28px;
+  align-items: stretch;
+  margin-top: 16px;
+}
+
+.landing__hero-copy {
+  padding: 22px 4px 8px;
+  color: #f8f6ef;
+}
+
+.landing__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.83rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.landing__title {
+  margin: 18px 0 10px;
+  font-size: clamp(2.8rem, 5vw, 4.6rem);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+
+.landing__subtitle {
+  max-width: 640px;
+  margin: 0;
+  color: rgba(248, 246, 239, 0.9);
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.landing__cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.landing__install-button,
+.landing__ghost-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 22px;
+  border-radius: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.landing__install-button {
+  border: none;
+  background: linear-gradient(135deg, #d7bf79 0%, #f1e1a6 100%);
+  color: #193626;
+  box-shadow: 0 14px 32px rgba(7, 23, 16, 0.22);
+}
+
+.landing__ghost-button {
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8f6ef;
+}
+
+.landing__install-button:hover,
+.landing__ghost-button:hover,
+.landing__role-button:hover {
+  transform: translateY(-2px);
+}
+
+.landing__install-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 340px;
+  min-height: 56px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f5f0e3;
+  line-height: 1.4;
+}
+
+.landing__install-icon,
+.landing__mini-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+}
+
+.landing__highlights {
+  display: grid;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.landing__highlight {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: rgba(248, 246, 239, 0.92);
+}
+
+.landing__highlight-dot {
+  width: 10px;
+  height: 10px;
+  margin-top: 7px;
+  border-radius: 999px;
+  background: #e1cb87;
+  box-shadow: 0 0 0 6px rgba(225, 203, 135, 0.18);
+}
+
+.landing__hero-card {
+  align-self: end;
+  padding: 26px;
+  border: 1px solid rgba(215, 204, 177, 0.7);
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255, 252, 245, 0.98) 0%, rgba(246, 241, 228, 0.96) 100%);
+  box-shadow: 0 22px 44px rgba(14, 33, 24, 0.18);
+}
+
+.landing__hero-brand {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.landing__logo {
+  width: 88px;
+  height: 88px;
+  flex: 0 0 auto;
+}
+
+.landing__panel-kicker {
+  margin: 0 0 6px;
+  color: #6c6a5d;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.landing__hero-brand h2 {
+  margin: 0;
+  color: #173224;
+  font-size: 1.7rem;
+}
+
+.landing__stats {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.landing__stat {
+  padding: 16px 18px;
+  border: 1px solid rgba(26, 83, 54, 0.09);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.landing__stat strong {
+  display: block;
+  color: #173224;
+  font-size: 1rem;
+}
+
+.landing__stat span {
+  display: block;
+  margin-top: 6px;
+  color: #536156;
+  line-height: 1.5;
+}
+
+.landing__roles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 34px;
+}
+
+.landing__role-button {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  padding: 24px;
+  border: 1px solid rgba(21, 59, 40, 0.08);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.9);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 18px 34px rgba(17, 35, 26, 0.08);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.landing__role-button--user {
+  border-color: rgba(26, 83, 54, 0.12);
+}
+
+.landing__role-button--admin {
+  border-color: rgba(176, 149, 89, 0.22);
+}
+
+.landing__role-badge {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border-radius: 20px;
+  flex: 0 0 auto;
+}
+
+.landing__role-button--user .landing__role-badge {
+  background: linear-gradient(135deg, #e4f0e8 0%, #f5f9f6 100%);
+  color: #1a5336;
+}
+
+.landing__role-button--admin .landing__role-badge {
+  background: linear-gradient(135deg, #f2e7c8 0%, #fbf5e7 100%);
+  color: #7e6231;
+}
+
+.landing__role-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.landing__role-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.landing__role-label {
+  color: #173224;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.landing__role-desc {
+  color: #546358;
+  line-height: 1.55;
+}
+
+.landing__footer {
+  margin-top: 24px;
+  padding: 18px 0 4px;
+  color: rgba(32, 58, 45, 0.72);
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+.landing__footer p {
+  margin: 0;
+}
+
+@media (max-width: 920px) {
+  .landing {
+    padding-top: 22px;
+    background:
+      radial-gradient(circle at top left, rgba(188, 166, 96, 0.18), transparent 28%),
+      linear-gradient(180deg, #0f2c20 0%, #194d35 52%, #f4efe3 52%, #f7f4ec 100%);
+  }
+
+  .landing__hero {
+    grid-template-columns: 1fr;
+  }
+
+  .landing__hero-card {
+    align-self: auto;
+  }
+}
+
+@media (max-width: 680px) {
+  .landing {
+    padding-inline: 16px;
+  }
+
+  .landing__title {
+    line-height: 1;
+  }
+
+  .landing__roles {
+    grid-template-columns: 1fr;
+  }
+
+  .landing__role-button {
+    align-items: flex-start;
+  }
+
+  .landing__cta-row {
+    flex-direction: column;
+  }
+
+  .landing__install-button,
+  .landing__ghost-button,
+  .landing__install-state {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing__install-button,
+  .landing__ghost-button,
+  .landing__role-button {
+    transition: none;
+  }
+
+  .landing__install-button:hover,
+  .landing__ghost-button:hover,
+  .landing__role-button:hover {
+    transform: none;
+  }
+}
