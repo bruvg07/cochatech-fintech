@@ -185,6 +185,11 @@
   width: 88px;
   height: 88px;
   flex: 0 0 auto;
+  object-fit: cover;
+  border-radius: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 12px 24px rgba(18, 38, 28, 0.16);
+  background: #ffffff;
 }
 
 .landing__panel-kicker {

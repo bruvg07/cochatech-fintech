@@ -12,8 +12,8 @@ export default defineConfig({
         name: 'Escudo Financiero',
         short_name: 'Escudo Financiero',
         description: 'PWA institucional para acceso seguro del Banco Mercantil Santa Cruz',
-        theme_color: '#1a5336',
-        background_color: '#f8f9fb',
+        theme_color: '#0a4c3a',
+        background_color: '#0a4c3a',
         display: 'standalone',
         start_url: '/',
 
@@ -27,6 +27,12 @@ export default defineConfig({
             src: '/pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
+          },
+          {
+            src: '/pwa-maskable-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
           },
         ],
       },
