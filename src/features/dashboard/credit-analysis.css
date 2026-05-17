@@ -1,0 +1,68 @@
+.credit-admin {
+  min-height: 100vh;
+  padding: 24px;
+  background: linear-gradient(180deg, #f8f9fb 0%, #eef2f0 100%);
+  color: #2c332f;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+.credit-admin__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+}
+
+.credit-admin__brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.credit-admin__logo svg { width: 48px; height: 48px }
+.credit-admin__subtitle { margin: 0; color: #404942; font-size: 0.9rem }
+
+.credit-admin__filters {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.credit-admin__filters label { display: flex; flex-direction: column; font-size: 0.85rem }
+.credit-admin__filters select { margin-top: 6px; padding: 8px 10px; border-radius: 8px; border: 1px solid #e6e8ea }
+
+.credit-admin__grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  gap: 18px;
+  align-items: start;
+}
+
+.credit-admin__panel-title { margin: 0 0 12px 0; color: #1a5336 }
+
+.credit-admin__left { padding: 18px }
+.credit-admin__table { width: 100%; border-collapse: collapse; font-size: 0.95rem }
+.credit-admin__table th,
+.credit-admin__table td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #f0f2f1 }
+.credit-admin__table th { color: #404942; font-weight: 700; font-size: 0.85rem }
+
+.credit-admin__center { padding: 18px; display: flex; flex-direction: column }
+.credit-admin__chart-wrap { flex: 1; display: grid; place-items: center }
+.credit-admin__chart { width: 100%; height: 320px }
+.credit-admin__bar { fill: #8db89b; transition: transform 160ms ease, fill 160ms ease }
+.credit-admin__bar.is-hover { transform: translateY(-6px); fill: #1a5336 }
+.credit-admin__bar-label { fill: #2c332f; font-size: 14px }
+.credit-admin__tooltip { fill: rgba(25,28,30,0.92) }
+.credit-admin__tooltip-text { fill: #ffffff; font-size: 12px }
+
+.credit-admin__right { padding: 18px; display: flex; flex-direction: column; gap: 12px }
+.credit-admin__report p { margin: 0; color: #404942 }
+.credit-admin__notes label { display: block; margin-bottom: 6px; font-weight: 700 }
+.credit-admin__notes textarea { width: 100%; min-height: 120px; padding: 10px; border-radius: 8px; border: 1px solid #e6e8ea }
+
+@media (max-width: 980px) {
+  .credit-admin__grid { grid-template-columns: 1fr; }
+  .credit-admin__top { flex-direction: column; align-items: stretch }
+}
