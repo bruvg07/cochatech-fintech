@@ -76,13 +76,13 @@ export function AuthScreen({ role, onAuthenticated }: AuthScreenProps) {
       <div className="auth-screen__ambient auth-screen__ambient--two" aria-hidden="true" />
 
       <section className="auth-shell">
-        <header className="auth-brandbar" aria-label="Escudo Financiero">
+        <header className="auth-brandbar" aria-label="Mercantil AlivIA">
           <div className="auth-brandbar__emblem" aria-hidden="true">
             <ShieldIcon />
           </div>
           <div>
-            <p className="auth-brandbar__eyebrow">Banco Mercantil Santa Cruz</p>
-            <h1 className="auth-brandbar__title">Escudo Financiero</h1>
+            <p className="auth-brandbar__eyebrow">Mercantil Santa Cruz</p>
+            <h1 className="auth-brandbar__title">Mercantil AlivIA</h1>
           </div>
         </header>
 

@@ -1,23 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useInstallPrompt } from '../../hooks/useInstallPrompt'
+import logoImage from '../../assets/Logo.jpeg'
 import './landing.css'
-
-function LogoBMSC() {
-  return (
-    <svg viewBox="0 0 120 120" className="landing__logo" aria-hidden="true">
-      <defs>
-        <linearGradient id="landing-logo-fill" x1="0%" x2="100%" y1="0%" y2="100%">
-          <stop offset="0%" stopColor="#244d38" />
-          <stop offset="100%" stopColor="#0f241a" />
-        </linearGradient>
-      </defs>
-      <circle cx="60" cy="60" r="58" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.22)" strokeWidth="2" />
-      <circle cx="60" cy="60" r="46" fill="url(#landing-logo-fill)" />
-      <path d="M60 27 82 37v18.5C82 71 72.5 85 60 91 47.5 85 38 71 38 55.5V37l22-10Z" fill="#f6f0df" opacity="0.95" />
-      <path d="M48 60.5 56 68l16-18" fill="none" stroke="#1a5336" strokeLinecap="round" strokeLinejoin="round" strokeWidth="5" />
-    </svg>
-  )
-}
 
 function DownloadIcon() {
   return (
@@ -72,7 +56,7 @@ export function LandingScreen() {
       <section className="landing__hero">
         <div className="landing__hero-copy">
           <span className="landing__eyebrow">PWA bancaria lista para instalar</span>
-          <h1 className="landing__title">Escudo Financiero</h1>
+          <h1 className="landing__title">Mercantil AlivIA</h1>
           <p className="landing__subtitle">
             Una entrada clara para que cada perfil comience en la pantalla correcta y pueda instalar la app en segundos.
           </p>
@@ -107,7 +91,7 @@ export function LandingScreen() {
 
         <div className="landing__hero-card card-surface">
           <div className="landing__hero-brand">
-            <LogoBMSC />
+            <img className="landing__logo" src={logoImage} alt="Logo de Mercantil AlivIA" />
             <div>
               <p className="landing__panel-kicker">Experiencia principal</p>
               <h2>Instala y elige tu acceso</h2>
@@ -162,7 +146,7 @@ export function LandingScreen() {
       </section>
 
       <footer className="landing__footer">
-        <p>Banco Mercantil Santa Cruz | Escudo Financiero 2026</p>
+        <p>Mercantil Santa Cruz | Mercantil AlivIA 2026</p>
       </footer>
     </main>
   )

@@ -140,7 +140,7 @@ export function RenegotiateScreen({ onSubmit }: RenegotiateScreenProps) {
       <main className="renegotiate-screen">
         <section className="renegotiate-shell card-surface">
           <header className="renegotiate-header">
-            <p className="renegotiate-header__eyebrow">Escudo Financiero</p>
+            <p className="renegotiate-header__eyebrow">Mercantil AlivIA</p>
             <h1>Ampliación de plazo</h1>
             <p className="renegotiate-header__subtitle">Cargando tus créditos...</p>
           </header>
@@ -154,7 +154,7 @@ export function RenegotiateScreen({ onSubmit }: RenegotiateScreenProps) {
       <main className="renegotiate-screen">
         <section className="renegotiate-shell card-surface">
           <header className="renegotiate-header">
-            <p className="renegotiate-header__eyebrow">Escudo Financiero</p>
+            <p className="renegotiate-header__eyebrow">Mercantil AlivIA</p>
             <h1>Ampliación de plazo</h1>
             <p className="renegotiate-header__subtitle">No pudimos cargar la información.</p>
           </header>
@@ -171,7 +171,7 @@ export function RenegotiateScreen({ onSubmit }: RenegotiateScreenProps) {
     <main className="renegotiate-screen">
       <section className="renegotiate-shell card-surface">
         <header className="renegotiate-header">
-          <p className="renegotiate-header__eyebrow">Escudo Financiero</p>
+          <p className="renegotiate-header__eyebrow">Mercantil AlivIA</p>
           <h1>Ampliación de plazo</h1>
           <p className="renegotiate-header__subtitle">
             Solicita más meses para tu crédito y revisa el nuevo valor estimado de la cuota.
