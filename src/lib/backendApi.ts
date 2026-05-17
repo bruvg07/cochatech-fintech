@@ -198,6 +198,7 @@ export type AdminDashboardResponse = {
     scores_registrados: number
   }
   insight: string
+  analisis_notas?: string
 }
 
 export type AdminUserCard = {

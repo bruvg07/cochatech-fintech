@@ -12,6 +12,7 @@ export function CreditAnalysisAdmin() {
   const [hovered, setHovered] = useState<string | null>(null)
   const [data, setData] = useState<DataRow[]>([])
   const [insight, setInsight] = useState('')
+  const [analisisNotas, setAnalisisNotas] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -30,6 +31,7 @@ export function CreditAnalysisAdmin() {
 
         setData(response.grades)
         setInsight(response.insight)
+        setAnalisisNotas(response.analisis_notas ?? '')
       } catch (loadError) {
         if (!alive) {
           return
@@ -170,6 +172,7 @@ export function CreditAnalysisAdmin() {
 
               <div className="credit-admin__notes">
                 <label>Notas del analista</label>
+                <p>{analisisNotas || 'No hay notas disponibles.'}</p>
                 <textarea placeholder="Agrega anotaciones e interpretaciones..." />
               </div>
             </div>
