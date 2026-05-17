@@ -7,7 +7,7 @@
 }
 
 .renegotiate-shell {
-  width: min(100%, 430px);
+  width: min(100%, 960px);
   margin: 0 auto;
   padding: 20px;
   display: grid;
@@ -80,6 +80,7 @@
 .renegotiate-form {
   display: grid;
   gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .renegotiate-field {
@@ -121,6 +122,12 @@
   font-weight: 700;
   font-size: 0.98rem;
   box-shadow: 0 16px 24px rgba(26, 83, 54, 0.18);
+  grid-column: 1 / -1;
+}
+
+.renegotiate-preview,
+.renegotiate-error {
+  grid-column: 1 / -1;
 }
 
 .renegotiate-modal__backdrop {
@@ -223,5 +230,11 @@
 
   .renegotiate-modal {
     padding: 18px;
+  }
+}
+
+@media (max-width: 860px) {
+  .renegotiate-form {
+    grid-template-columns: 1fr;
   }
 }

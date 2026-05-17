@@ -6,6 +6,11 @@ type DashboardScreenProps = {
   onLogout?: () => void
 }
 
+type StaticGradeMessage = {
+  headline: string
+  summary: string
+}
+
 function HomeIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -34,7 +39,7 @@ function WalletIcon() {
 function riskStyles(nivelRiesgo: string) {
   switch (nivelRiesgo.toLowerCase()) {
     case 'critico':
-      return { color: '#c0392b', label: 'Riesgo crítico' }
+      return { color: '#c0392b', label: 'Riesgo critico' }
     case 'alto':
       return { color: '#d98c1f', label: 'Riesgo alto' }
     case 'medio':
@@ -46,6 +51,46 @@ function riskStyles(nivelRiesgo: string) {
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('es-BO', { maximumFractionDigits: 0 }).format(value)
+}
+
+function getGradeMessage(grade: string): StaticGradeMessage {
+  switch ((grade || '').toUpperCase()) {
+    case 'A':
+      return {
+        headline: 'Tu perfil se mantiene estable y saludable.',
+        summary: 'Tu calificacion A refleja buen comportamiento de pago. Mantener cuotas puntuales te ayuda a conservar condiciones favorables.',
+      }
+    case 'B':
+      return {
+        headline: 'Tu perfil sigue fuerte, con pequenas alertas a vigilar.',
+        summary: 'Tienes un perfil solido, pero conviene evitar retrasos nuevos para volver a un nivel optimo y sostener tu historial.',
+      }
+    case 'C':
+      return {
+        headline: 'Tu perfil necesita seguimiento cercano.',
+        summary: 'La calificacion C sugiere revisar fechas y montos proximos para reducir presion sobre tus cuotas y mejorar tu historial.',
+      }
+    case 'D':
+      return {
+        headline: 'Tu perfil muestra riesgo elevado en este momento.',
+        summary: 'Conviene priorizar pagos pendientes y considerar una ampliacion de plazo si necesitas reorganizar tus cuotas cuanto antes.',
+      }
+    case 'E':
+      return {
+        headline: 'Tu perfil requiere acciones inmediatas de regularizacion.',
+        summary: 'Hay senales importantes de atraso. Actuar ahora con pagos o reprogramacion puede ayudarte a contener un deterioro mayor.',
+      }
+    case 'F':
+      return {
+        headline: 'Tu perfil esta en nivel critico de seguimiento.',
+        summary: 'La calificacion F indica alta urgencia. Te conviene regularizar cuotas pendientes y solicitar apoyo de reprogramacion lo antes posible.',
+      }
+    default:
+      return {
+        headline: 'Tu perfil crediticio esta siendo monitoreado.',
+        summary: 'Revisa tus creditos activos y manten tus pagos al dia para conservar un historial estable.',
+      }
+  }
 }
 
 export function DashboardScreen({ onLogout }: DashboardScreenProps) {
@@ -88,7 +133,9 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
     }
   }, [onLogout])
 
-  const risk = riskStyles(dashboard?.score.nivel_riesgo ?? dashboard?.cliente.calificacion ?? 'bajo')
+  const grade = dashboard?.cliente.calificacion ?? 'A'
+  const risk = riskStyles(dashboard?.score.nivel_riesgo ?? grade ?? 'bajo')
+  const staticMessage = getGradeMessage(grade)
 
   if (isLoading) {
     return (
@@ -97,7 +144,7 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
           <header className="dashboard__header card-surface">
             <div>
               <p className="dashboard__eyebrow">Mercantil AlivIA</p>
-              <h1>Cargando tu información...</h1>
+              <h1>Cargando tu informacion...</h1>
             </div>
           </header>
         </section>
@@ -121,15 +168,15 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
             )}
           </header>
           <section className="dashboard__banner card-surface">
-            <p className="dashboard__banner-title">Error</p>
-            <p>{error ?? 'Intenta iniciar sesión nuevamente.'}</p>
+            <p className="dashboard__banner-title">Estado</p>
+            <p>{error ?? 'Intenta iniciar sesion nuevamente.'}</p>
           </section>
         </section>
       </main>
     )
   }
 
-  const { cliente, score, resumen, mensaje } = dashboard
+  const { cliente, score, resumen } = dashboard
 
   return (
     <main className="dashboard">
@@ -147,30 +194,32 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
           )}
         </header>
 
-        <section className="dashboard__hero card-surface">
-          <div className="dashboard__score">
-            <div
-              className="dashboard__score-ring"
-              style={{ '--risk-color': risk.color } as CSSProperties}
-            >
-              <span className="dashboard__score-letter">{cliente.calificacion}</span>
-            </div>
+        <section className="dashboard__main-grid">
+          <section className="dashboard__hero card-surface">
+            <div className="dashboard__score">
+              <div
+                className="dashboard__score-ring"
+                style={{ '--risk-color': risk.color } as CSSProperties}
+              >
+                <span className="dashboard__score-letter">{cliente.calificacion}</span>
+              </div>
 
-            <div className="dashboard__score-copy">
-              <p className="dashboard__label">Calificación ASFI</p>
-              <h2>{mensaje}</h2>
-              <p>
-                Registra {score.numero_creditos} créditos y {resumen.pagos_con_retraso} pagos con retraso. El monitoreo
-                se actualiza desde la API.
-              </p>
-              <div className="dashboard__score-chip">{risk.label}</div>
+              <div className="dashboard__score-copy">
+                <p className="dashboard__label">Calificacion ASFI</p>
+                <h2>{staticMessage.headline}</h2>
+                <p>
+                  Registra {score.numero_creditos} creditos y {resumen.pagos_con_retraso} pagos con retraso.
+                  Esta lectura se muestra de forma estatica segun tu calificacion actual.
+                </p>
+                <div className="dashboard__score-chip">{risk.label}</div>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section className="dashboard__banner card-surface">
-          <p className="dashboard__banner-title">IA financiera</p>
-          <p>{mensaje}</p>
+          <aside className="dashboard__banner card-surface">
+            <p className="dashboard__banner-title">Guia financiera</p>
+            <p>{staticMessage.summary}</p>
+          </aside>
         </section>
 
         <section className="dashboard__metrics">
@@ -194,7 +243,7 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
             <span className="dashboard__metric-icon dashboard__metric-icon--accent">
               <HomeIcon />
             </span>
-            <p>Total crédito</p>
+            <p>Total credito</p>
             <strong>{formatCurrency(resumen.total_creditos)} Bs.</strong>
           </article>
         </section>
