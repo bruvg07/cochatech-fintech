@@ -3,20 +3,22 @@ import { AuthScreen } from './features/auth'
 import { DashboardScreen } from './features/dashboard'
 import { DebtsScreen, DebtDetail, PaymentScreen } from './features/debts'
 import type { Debt, Payment } from './features/debts'
+import { RenegotiateScreen } from './features/renegotiate/RenegotiateScreen'
 import { BottomNav } from './components/BottomNav'
 
-type Screen = 'auth' | 'dashboard' | 'debts' | 'debtDetail' | 'payment'
+type Screen = 'auth' | 'dashboard' | 'debts' | 'renegotiate' | 'debtDetail' | 'payment'
 
 function App() {
   const [screen, setScreen] = useState<Screen>('auth')
-  const [activeTab, setActiveTab] = useState<'home' | 'debts'>('home')
+  const [activeTab, setActiveTab] = useState<'home' | 'debts' | 'renegotiate'>('home')
   const [selectedDebt, setSelectedDebt] = useState<Debt | null>(null)
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null)
 
-  const handleTabChange = (tab: 'home' | 'debts') => {
+  const handleTabChange = (tab: 'home' | 'debts' | 'renegotiate') => {
     setActiveTab(tab)
     if (tab === 'home') setScreen('dashboard')
-    else setScreen('debts')
+    else if (tab === 'debts') setScreen('debts')
+    else setScreen('renegotiate')
   }
 
   const openDebt = (debt: Debt) => {
@@ -50,6 +52,13 @@ function App() {
       {screen === 'debts' && (
         <>
           <DebtsScreen onDebtSelect={openDebt} />
+          <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+        </>
+      )}
+
+      {screen === 'renegotiate' && (
+        <>
+          <RenegotiateScreen />
           <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
         </>
       )}

@@ -44,6 +44,10 @@
   margin-bottom: 18px;
 }
 
+.payment-screen__actions {
+  display: grid;
+}
+
 .payment-screen .label {
   font-size: 0.75rem;
   color: #404942;
@@ -56,8 +60,9 @@
 
 .btn-verify {
   all: unset;
-  display: inline-block;
+  display: block;
   width: 100%;
+  box-sizing: border-box;
   text-align: center;
   padding: 12px 16px;
   border-radius: 999px;
@@ -66,4 +71,109 @@
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 12px 24px rgba(26,83,54,0.18);
+}
+
+.payment-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(14, 22, 17, 0.46);
+  backdrop-filter: blur(8px);
+}
+
+.payment-modal {
+  width: min(100%, 420px);
+  padding: 22px;
+  display: grid;
+  gap: 18px;
+}
+
+.payment-modal__header {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.payment-modal__eyebrow,
+.payment-modal__label {
+  margin: 0;
+  color: #1a5336;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.payment-modal h2 {
+  margin: 0;
+  color: #191c1e;
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+
+.payment-modal p {
+  margin: 0;
+  color: #404942;
+  line-height: 1.55;
+}
+
+.payment-modal__field {
+  display: grid;
+  gap: 8px;
+}
+
+.payment-modal__input {
+  width: 100%;
+  border: 1px solid rgba(192, 201, 192, 0.95);
+  border-radius: 14px;
+  background: #ffffff;
+  color: #191c1e;
+  padding: 14px;
+  font: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.payment-modal__input:focus {
+  border-color: #1a5336;
+  box-shadow: 0 0 0 4px rgba(26, 83, 54, 0.08);
+}
+
+.payment-modal__input--textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.payment-modal__actions {
+  display: flex;
+  gap: 12px;
+}
+
+.payment-modal__button {
+  min-height: 48px;
+  flex: 1;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+}
+
+.payment-modal__button--ghost {
+  background: #e0e3e3;
+  color: #404942;
+}
+
+.payment-modal__button--primary {
+  background: #1a5336;
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(26, 83, 54, 0.2);
+}
+
+.payment-modal__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
 }

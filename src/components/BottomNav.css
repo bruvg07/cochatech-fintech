@@ -31,12 +31,23 @@
   max-width: 100px;
 }
 
+.bottom-nav__item--highlight {
+  position: relative;
+}
+
 .bottom-nav__item:active {
   background-color: #f2f4f6;
 }
 
 .bottom-nav__item--active {
   color: #1a5336;
+}
+
+.bottom-nav__item--highlight.bottom-nav__item--active {
+  background: #dae6dc;
+  border-radius: 999px;
+  color: #1a5336;
+  box-shadow: inset 0 0 0 1px rgba(26, 83, 54, 0.12);
 }
 
 .bottom-nav__item:not(.bottom-nav__item--active) {

@@ -8,6 +8,7 @@ export type Payment = {
   amount: number
   dueDate: string
   debtId: string
+  requiresJustification: boolean
 }
 
 type DebtDetailProps = {
@@ -69,6 +70,7 @@ export function DebtDetail({ debt, onBack, onPay }: DebtDetailProps) {
                       amount: 2000,
                       dueDate: '03/06/26',
                       debtId: debt.id,
+                      requiresJustification: debt.diasMora > 0,
                     })
                   }
                 >
@@ -96,6 +98,7 @@ export function DebtDetail({ debt, onBack, onPay }: DebtDetailProps) {
                       amount: 2000,
                       dueDate: '03/07/26',
                       debtId: debt.id,
+                      requiresJustification: debt.diasMora > 0,
                     })
                   }
                 >

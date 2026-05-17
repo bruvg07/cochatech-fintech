@@ -1,0 +1,193 @@
+.renegotiate-screen {
+  min-height: 100svh;
+  padding: max(env(safe-area-inset-top), 16px) 16px calc(124px + env(safe-area-inset-bottom));
+  background:
+    radial-gradient(circle at top left, rgba(140, 197, 160, 0.14), transparent 36%),
+    linear-gradient(180deg, #f8f9fb 0%, #eef2f0 100%);
+}
+
+.renegotiate-shell {
+  width: min(100%, 430px);
+  margin: 0 auto;
+  padding: 20px;
+  display: grid;
+  gap: 18px;
+}
+
+.renegotiate-header {
+  display: grid;
+  gap: 8px;
+}
+
+.renegotiate-header__eyebrow,
+.renegotiate-field__label {
+  margin: 0;
+  color: #1a5336;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.renegotiate-header h1 {
+  margin: 0;
+  font-size: 1.7rem;
+  line-height: 1.15;
+  color: #191c1e;
+}
+
+.renegotiate-header__subtitle {
+  margin: 0;
+  color: #404942;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.renegotiate-form {
+  display: grid;
+  gap: 14px;
+}
+
+.renegotiate-field {
+  display: grid;
+  gap: 8px;
+}
+
+.renegotiate-field__control {
+  width: 100%;
+  min-height: 52px;
+  border: 1px solid rgba(192, 201, 192, 0.95);
+  border-radius: 14px;
+  background: #ffffff;
+  color: #191c1e;
+  padding: 0 14px;
+  font: inherit;
+  outline: none;
+}
+
+.renegotiate-field__control:focus {
+  border-color: #1a5336;
+  box-shadow: 0 0 0 4px rgba(26, 83, 54, 0.08);
+}
+
+.renegotiate-field__control--textarea {
+  min-height: 120px;
+  padding: 14px;
+  resize: vertical;
+}
+
+.renegotiate-submit {
+  min-height: 52px;
+  margin: 6px auto 0;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #1a5336 0%, #296140 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.98rem;
+  box-shadow: 0 16px 24px rgba(26, 83, 54, 0.18);
+}
+
+.renegotiate-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(14, 22, 17, 0.46);
+  backdrop-filter: blur(8px);
+}
+
+.renegotiate-modal {
+  width: min(100%, 420px);
+  padding: 22px;
+  display: grid;
+  gap: 18px;
+  text-align: center;
+  animation: renegotiate-modal-enter 180ms ease-out;
+}
+
+.renegotiate-modal__icon {
+  width: 72px;
+  height: 72px;
+  margin: -4px auto 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(26, 83, 54, 0.12), rgba(41, 97, 64, 0.2));
+  color: #1a5336;
+}
+
+.renegotiate-modal__icon svg {
+  width: 34px;
+  height: 34px;
+  fill: currentColor;
+}
+
+.renegotiate-modal__content {
+  display: grid;
+  gap: 10px;
+}
+
+.renegotiate-modal__eyebrow {
+  margin: 0;
+  color: #1a5336;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.renegotiate-modal h2 {
+  margin: 0;
+  color: #191c1e;
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+
+.renegotiate-modal p {
+  margin: 0;
+  color: #404942;
+  line-height: 1.55;
+}
+
+.renegotiate-modal__button {
+  min-height: 48px;
+  margin: 0 auto;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 999px;
+  background: #1a5336;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  box-shadow: 0 12px 24px rgba(26, 83, 54, 0.2);
+}
+
+@keyframes renegotiate-modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 420px) {
+  .renegotiate-screen {
+    padding-inline: 12px;
+  }
+
+  .renegotiate-shell {
+    padding: 18px;
+  }
+
+  .renegotiate-modal {
+    padding: 18px;
+  }
+}

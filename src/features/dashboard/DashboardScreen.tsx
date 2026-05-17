@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import './dashboard.css'
 
 type DashboardScreenProps = {
@@ -8,15 +9,6 @@ function HomeIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="M12 3.25 3.5 10.5v9.75h6.25V14h4.5v6.25h6.25V10.5L12 3.25Z" />
-    </svg>
-  )
-}
-
-function DebtIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M6 4.75h12a1.25 1.25 0 0 1 1.25 1.25v12A1.25 1.25 0 0 1 18 19.25H6A1.25 1.25 0 0 1 4.75 18V6A1.25 1.25 0 0 1 6 4.75Zm0 1.5a.25.25 0 0 0-.25.25v12c0 .14.11.25.25.25h12a.25.25 0 0 0 .25-.25V6.5a.25.25 0 0 0-.25-.25H6Z" />
-      <path d="M8 8.5h8v1.5H8zm0 3h8V13H8zm0 3h5v1.5H8z" />
     </svg>
   )
 }
@@ -61,7 +53,7 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
           <div className="dashboard__score">
             <div
               className="dashboard__score-ring"
-              style={{ ['--risk-color' as '--risk-color']: riskColor }}
+              style={{ '--risk-color': riskColor } as CSSProperties}
             >
               <span className="dashboard__score-letter">A</span>
             </div>
@@ -112,24 +104,6 @@ export function DashboardScreen({ onLogout }: DashboardScreenProps) {
           </article>
         </section>
       </section>
-
-      <nav className="dashboard-nav" aria-label="Navegación inferior">
-        <button className="dashboard-nav__item dashboard-nav__item--active" type="button">
-          <DebtIcon />
-          <span>Deuda</span>
-          <small>Simulador / pagos</small>
-        </button>
-
-        <button className="dashboard-nav__home" type="button" aria-label="Inicio">
-          <HomeIcon />
-        </button>
-
-        <button className="dashboard-nav__item" type="button">
-          <TrendIcon />
-          <span>Resumen</span>
-          <small>Estado general</small>
-        </button>
-      </nav>
     </main>
   )
 }
