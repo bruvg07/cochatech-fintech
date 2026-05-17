@@ -129,7 +129,7 @@ function PaymentRoute() {
   if (!payment) return <Navigate to="/debts" replace />
 
   const handleBack = () => navigate(-1)
-  const handleVerify = () => navigate(-1)
+  const handleVerify = () => navigate(`/debt/${payment.debtId}`)
 
   return <PaymentScreen payment={payment} onBack={handleBack} onVerify={handleVerify} />
 }

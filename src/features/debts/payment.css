@@ -48,6 +48,12 @@
   display: grid;
 }
 
+.payment-screen__error {
+  margin: 12px 0 0;
+  color: #b42318;
+  font-weight: 600;
+}
+
 .payment-screen .label {
   font-size: 0.75rem;
   color: #404942;

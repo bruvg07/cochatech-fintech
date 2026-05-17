@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { registerCreditPayment } from '../../lib/backendApi'
 import './payment.css'
 import type { Payment } from './DebtDetail'
 
@@ -11,16 +12,35 @@ type PaymentScreenProps = {
 export function PaymentScreen({ payment, onBack, onVerify }: PaymentScreenProps) {
   const [showVerifyModal, setShowVerifyModal] = useState(false)
   const [justification, setJustification] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const qrData = `pago:${payment.id};monto:${payment.amount};deuda:${payment.debtId}`
 
   const handleVerifyClick = () => {
     setShowVerifyModal(true)
   }
 
-  const handleConfirmVerification = () => {
-    onVerify()
-    setShowVerifyModal(false)
-    setJustification('')
+  const handleConfirmVerification = async () => {
+    setIsSubmitting(true)
+    setSubmitError(null)
+
+    try {
+      await registerCreditPayment(payment.debtId, {
+        amount: payment.amount,
+        title: payment.title,
+        due_date: payment.dueDate,
+        requires_justification: payment.requiresJustification,
+        justification: payment.requiresJustification ? justification.trim() : undefined,
+      })
+
+      onVerify()
+      setShowVerifyModal(false)
+      setJustification('')
+    } catch (registerError) {
+      setSubmitError(registerError instanceof Error ? registerError.message : 'No se pudo registrar el pago.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -57,6 +77,8 @@ export function PaymentScreen({ payment, onBack, onVerify }: PaymentScreenProps)
             Verificar pago
           </button>
         </div>
+
+        {submitError && <p className="payment-screen__error">{submitError}</p>}
       </section>
 
       {showVerifyModal && (
@@ -103,9 +125,9 @@ export function PaymentScreen({ payment, onBack, onVerify }: PaymentScreenProps)
                 className="payment-modal__button payment-modal__button--primary"
                 type="button"
                 onClick={handleConfirmVerification}
-                disabled={payment.requiresJustification && justification.trim().length === 0}
+                disabled={isSubmitting || (payment.requiresJustification && justification.trim().length === 0)}
               >
-                Confirmar
+                {isSubmitting ? 'Procesando...' : 'Confirmar'}
               </button>
             </div>
           </section>

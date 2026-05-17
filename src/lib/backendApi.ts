@@ -74,6 +74,23 @@ export type CreditCase = {
   fecha_cierre?: string | null
 }
 
+export type RegisterPaymentRequest = {
+  amount: number
+  title: string
+  due_date: string
+  requires_justification: boolean
+  justification?: string
+}
+
+export type RegisterPaymentResponse = {
+  message: string
+  payment: CreditDetailPayment & {
+    estado: string
+    fecha_pago?: string | null
+    dias_atraso?: number
+  }
+}
+
 export type CreditDetailResponse = {
   cliente: {
     id: string
@@ -228,4 +245,24 @@ export async function fetchCreditDetail(creditId: string): Promise<CreditDetailR
   })
 
   return parseJsonResponse<CreditDetailResponse>(response)
+}
+
+export async function registerCreditPayment(creditId: string, request: RegisterPaymentRequest): Promise<RegisterPaymentResponse> {
+  const session = getStoredSession()
+
+  if (!session) {
+    throw new Error('No hay una sesión activa.')
+  }
+
+  const response = await fetch(`${API_BASE_URL}/creditos/${creditId}/pagos`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${session.token}`,
+    },
+    body: JSON.stringify(request),
+  })
+
+  return parseJsonResponse<RegisterPaymentResponse>(response)
 }
